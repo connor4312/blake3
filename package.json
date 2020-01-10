@@ -1,0 +1,40 @@
+{
+  "name": "blake3",
+  "version": "1.0.0",
+  "description": "Blake3 hashing for JavaScript",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "mocha --require source-map-support/register --recursive dist/**/*.test.js",
+    "fmt": "prettier --write \"ts/**/*.ts\" \"*.md\"",
+    "compile": "rimraf dist && tsc",
+    "watch": "rimraf dist && tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/connor4312/blake3.git"
+  },
+  "bugs": {
+    "url": "https://github.com/connor4312/blake3/issues"
+  },
+  "homepage": "https://github.com/connor4312/blake3#readme",
+  "author": "Connor Peet <connor@peet.io>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^4.2.7",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^13.1.6",
+    "@types/stream-buffers": "^3.0.3",
+    "chai": "^4.2.0",
+    "mocha": "^7.0.0",
+    "prettier": "^1.19.1",
+    "rimraf": "^3.0.0",
+    "source-map-support": "^0.5.16",
+    "stream-buffers": "^3.0.2",
+    "typescript": "^3.7.4"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "trailingComma": "all"
+  }
+}
