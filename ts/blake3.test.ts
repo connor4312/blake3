@@ -1,4 +1,4 @@
-import { hash, createHash } from './';
+import { hash, createHash } from './node';
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
 import { ReadableStreamBuffer } from 'stream-buffers';

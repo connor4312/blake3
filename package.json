@@ -2,7 +2,7 @@
   "name": "blake3",
   "version": "1.0.0",
   "description": "Blake3 hashing for JavaScript",
-  "main": "dist/index.js",
+  "main": "dist/node.js",
   "scripts": {
     "test": "mocha --require source-map-support/register --recursive dist/**/*.test.js",
     "fmt": "prettier --write \"ts/**/*.ts\" \"*.md\"",
