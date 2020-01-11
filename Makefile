@@ -1,25 +1,27 @@
+TARGETS=nodejs web
+MODE=release
+
 RUST_SRC = $(wildcard src/*.rs)
-RUST_OUT = pkg/nodejs/blake3_bg.wasm pkg/web/blake3_bg.wasm
+RUST_OUT = $(patsubst %, pkg/%/blake3_bg.wasm, $(TARGETS))
 TS_SRC = $(wildcard ts/*.ts)
 TS_OUT = pkg/index.js
-MIN_TMP = min.wasm
 
 all: $(RUST_OUT) $(TS_OUT)
 
-$(TS_OUT): $(TS_SRC)
+prepare:
+	npm install
+
+$(TS_OUT): $(TS_SRC) $(RUST_OUT)
 	tsc
 
-pkg/nodejs/blake3_bg.wasm: $(RUST_SRC)
-	wasm-pack build --release -t nodejs -d pkg/nodejs
-	wasm-opt -O4 -o $(MIN_TMP) $@
-	mv $(MIN_TMP) $@
-
-pkg/web/blake3_bg.wasm: $(RUST_SRC)
-	wasm-pack build --release -t web -d pkg/web
-	wasm-opt -O4 -o $(MIN_TMP) $@
-	mv $(MIN_TMP) $@
+$(RUST_OUT): $(RUST_SRC)
+	wasm-pack build --$(MODE) -t $(word 2, $(subst /, ,$@)) -d $(dir $@)
+ifeq ($(MODE), release)
+	wasm-opt -O4 -o $@.min $@
+	mv $@.min $@
+endif
 
 clean:
-	rm -rf pkg dist $(MIN_TMP)
+	rm -rf pkg dist
 
-.PHONY: all clean
+.PHONY: all clean prepare

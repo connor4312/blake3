@@ -30,8 +30,12 @@ describe('memory-safety (#5)', () => {
   it('hash', () => {
     const hashA = hash('hello');
     const hashB = hash('goodbye');
-    expect(toHex(hashA)).to.equal('ea8f163db38682925e4491c5e58d4bb3506ef8c14eb78a86e908c5624a67200f');
-    expect(toHex(hashB)).to.equal('f94a694227c5f31a07551908ad5fb252f5f0964030df5f2f200adedfae4d9b69');
+    expect(toHex(hashA)).to.equal(
+      'ea8f163db38682925e4491c5e58d4bb3506ef8c14eb78a86e908c5624a67200f',
+    );
+    expect(toHex(hashB)).to.equal(
+      'f94a694227c5f31a07551908ad5fb252f5f0964030df5f2f200adedfae4d9b69',
+    );
   });
 
   it('hasher', () => {
@@ -44,12 +48,14 @@ describe('memory-safety (#5)', () => {
 
     const hashA = hasherA.digest();
     const hashB = hasherB.digest();
-    expect(toHex(hashA)).to.equal('ea8f163db38682925e4491c5e58d4bb3506ef8c14eb78a86e908c5624a67200f');
-    expect(toHex(hashB)).to.equal('f94a694227c5f31a07551908ad5fb252f5f0964030df5f2f200adedfae4d9b69');
+    expect(toHex(hashA)).to.equal(
+      'ea8f163db38682925e4491c5e58d4bb3506ef8c14eb78a86e908c5624a67200f',
+    );
+    expect(toHex(hashB)).to.equal(
+      'f94a694227c5f31a07551908ad5fb252f5f0964030df5f2f200adedfae4d9b69',
+    );
   });
-})
-
-
+});
 
 describe('hash class', () => {
   it('digests', () => {
