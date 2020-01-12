@@ -11,6 +11,11 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '12.x'
+      - uses: actions-rs/toolchain@v1
+        with:
+            toolchain: nightly
+            override: true
+
       - run: npm install --ci
       - uses: actions-rs/cargo@v1
         with:
