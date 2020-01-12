@@ -13,8 +13,9 @@ jobs:
           node-version: '12.x'
       - uses: actions-rs/toolchain@v1
         with:
-            toolchain: nightly
-            override: true
+          toolchain: nightly
+          override: true
+          target: wasm32-unknown-unknown
 
       - run: npm install --ci
       - uses: actions-rs/cargo@v1
@@ -23,3 +24,9 @@ jobs:
           args: wasm-pack
       - run: make MODE=debug
       - run: npm test
+
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: pkg
+          path: pkg
