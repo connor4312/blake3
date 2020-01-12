@@ -70,6 +70,8 @@ describe('browser', () => {
     await buildWebpack();
     await serve();
 
+    this.timeout(20 * 1000);
+
     const { port } = server.address() as AddressInfo;
     const browser = await puppeteer.launch();
     page = await browser.newPage();

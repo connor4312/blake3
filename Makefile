@@ -12,7 +12,7 @@ prepare:
 	npm install
 
 $(TS_OUT): $(TS_SRC) $(RUST_OUT)
-	tsc
+	./node_modules/.bin/tsc
 
 $(RUST_OUT): $(RUST_SRC)
 	wasm-pack build --$(MODE) -t $(word 2, $(subst /, ,$@)) -d $(dir $@)

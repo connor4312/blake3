@@ -1,4 +1,4 @@
-import type { Blake3Hash } from '../../pkg/nodejs/blake3';
+import { Blake3Hash } from '../../pkg/nodejs/blake3';
 import { BaseHashInput, inputToArray } from './hash-fn';
 
 /**

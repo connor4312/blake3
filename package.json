@@ -4,7 +4,7 @@
   "description": "Blake3 hashing for JavaScript",
   "main": "dist/node.js",
   "scripts": {
-    "test": "mocha --require source-map-support/register --recursive dist/**/*.test.js",
+    "test": "mocha --require source-map-support/register --recursive dist/**/*.test.js --timeout 5000",
     "fmt": "prettier --write \"ts/**/*.ts\" \"*.md\"",
     "compile": "rimraf dist && tsc",
     "watch": "rimraf dist && tsc --watch"
