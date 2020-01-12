@@ -1,29 +1,5 @@
-import * as moduleType from '../pkg/nodejs/blake3';
-
-/**
- * A type that can be hashed.
- */
-export type HashInput = Uint8Array | ArrayBuffer | SharedArrayBuffer | ArrayLike<number>;
-
-const inputToArray = (input: HashInput) =>
-  input instanceof Uint8Array ? input : new Uint8Array(input);
-
-export interface IBlake3Raw {
-  /**
-   * Raw WebAssembly blake3 instance.
-   */
-  instance: typeof moduleType;
-
-  /**
-   * Returns a hash from the input data.
-   */
-  hash(data: HashInput): Uint8Array;
-
-  /**
-   * Creates a new {@link Hash} which can be appended to.
-   */
-  createHash(): Hash;
-}
+import type { Blake3Hash } from '../../pkg/nodejs/blake3';
+import { BaseHashInput, inputToArray } from './hash-fn';
 
 /**
  * A blake3 hash. Quite similar to Node's crypto hashing.
@@ -31,18 +7,18 @@ export interface IBlake3Raw {
  * Note that you must call {@link IHash#dispose} or {@link IHash#done} when
  * you're finished with it to free memory.
  */
-export class Hash {
+export class BaseHash {
   // these are covariant, but typing them better has a runtime overhead
-  private hash: moduleType.Blake3Hash | undefined = new this.raw.Blake3Hash();
+  private hash: Blake3Hash | undefined = new this.rawCtor();
   private digested: Uint8Array | undefined;
 
-  constructor(private readonly raw: typeof moduleType) {}
+  constructor(private readonly rawCtor: { new(): Blake3Hash }) {}
 
   /**
    * Adds the given data to the hash.
    * @throws {Error} if {@link IHash#digest} has already been called.
    */
-  update(data: HashInput): this {
+  update(data: BaseHashInput): this {
     if (!this.hash) {
       throw new Error('Cannot continue hashing after digest() has been called');
     }
@@ -75,15 +51,3 @@ export class Hash {
     }
   }
 }
-
-export const createModule = (raw: typeof moduleType): IBlake3Raw => ({
-  instance: raw,
-
-  hash(data: HashInput): Uint8Array {
-    return raw.hash(inputToArray(data));
-  },
-
-  createHash() {
-    return new Hash(raw);
-  },
-});

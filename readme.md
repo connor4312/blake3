@@ -1,12 +1,32 @@
 # blake3
 
-[Blake3](https://github.com/BLAKE3-team/BLAKE3) running in Node via WebAssembly. It works, but is not quite done yet.
+[Blake3](https://github.com/BLAKE3-team/BLAKE3) running in JavaScript (node.js and browsers) via WebAssembly. It works, but is not quite done yet.
 
 ```
 npm install blake3
 ```
 
 ## Quickstart
+
+If you're on Node, import the module via
+
+```js
+const blake3 = require('blake3');
+
+blake3.hash('foo'); // => Buffer
+```
+
+If you're in the browser, import `blake3/browser`. This includes a WebAssembly binary, so you probably want to import it asynchronously, like so:
+
+```js
+import('blake3/browser').then(blake3 => {
+  blake3.hash('foo'); // => Uint8Array
+});
+```
+
+The API is very similar in Node.js and browsers, but Node supports and returns Buffers and a wider range of input and output encoding.
+
+More complete example:
 
 ```js
 const { hash, createHash } = require('blake3');
@@ -26,27 +46,53 @@ stream.on('end', () => finishedHash(hash.digest()));
 
 ## API
 
-### `hash(data: BinaryLike): Uint8Array`
+### Node.js
 
-Returns a hash for the given data. The data can be a string, buffer, typedarray, array buffer, or array.
+The Node API can be imported via `require('blake3')`.
 
-Note that it returns {@link Uint8Array}s instead of buffers for browser compatibility. You can convert to a buffer using `Buffer.from(hash.digest())`.
+#### `hash(data: BinaryLike, encoding?: string): Buffer | string`
 
-### `createHash()`
+Returns a hash for the given data. The data can be a string, buffer, typedarray, array buffer, or array. If an `encoding` is given, a string will be returned. Otherwise, a Buffer is returned.
 
-Creates a new hasher instance.
+#### `createHash()`
 
-### `hash.update(data: BinaryLike): this`
+Creates a new hasher instance:
+
+#### `hash.update(data: BinaryLike): this`
 
 Adds data to a hash. The data can be a string, buffer, typedarray, array buffer, or array. This will throw if called after `digest()` or `dispose()`.
 
-### `hash.digest(): Uint8Array`
+#### `hash.digest(encoding?: string): Buffer | string`
 
-Returns the hash of the data. Note that it returns {@link Uint8Array}s instead of buffers for browser compatibility. You can convert to a buffer using `Buffer.from(hash.digest())`.
+Returns the hash of the data. If an `encoding` is given, a string will be returned. Otherwise, a Buffer is returned.
 
-### `hash.dispose()`
+#### `hash.dispose()`
 
-Disposes of unmanaged resources.
+Disposes of unmanaged resources. You should _always_ call this if you don't call `digest()` to free umanaged (WebAssembly-based) memory.
+
+### Browser
+
+The browser API can be imported via `import('blake3/browser')`.
+
+#### `hash(data: BinaryLike, encoding?: string): Uint8Array | string`
+
+Returns a hash for the given data. The data can be a string, buffer, typedarray, array buffer, or array. If an `encoding` is given (may be "hex", "base64", or "utf8"), a string will be returned. Otherwise, a Uint8Array is returned.
+
+#### `createHash()`
+
+Creates a new hasher instance:
+
+#### `hash.update(data: BinaryLike): this`
+
+Adds data to a hash. The data can be a string, buffer, typedarray, array buffer, or array. This will throw if called after `digest()` or `dispose()`.
+
+#### `hash.digest(encoding?: string): Uint8Array | string`
+
+Returns the hash of the data. If an `encoding` is given (may be "hex", "base64", or "utf8"), a string will be returned. Otherwise, a Uint8Array is returned.
+
+#### `hash.dispose()`
+
+Disposes of unmanaged resources. You should _always_ call this if you don't call `digest()` to free umanaged (WebAssembly-based) memory.
 
 ## Speed
 
@@ -91,5 +137,5 @@ Then, run `make prepare` to install local dependencies.
 
 Finally, `make MODE=debug` will create a build for you; you can leave off MODE=debug for a production release, and certainly should if you want to [benchmark it](#speed).
 
-- Rust code is compiled from `src/lib.rs` to `pkg/web` and `pkg/node`
+- Rust code is compiled from `src/lib.rs` to `pkg/browser` and `pkg/node`
 - TypeScript code is compiled from `ts/*.ts` into `dist`

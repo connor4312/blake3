@@ -1,4 +1,4 @@
-TARGETS=nodejs web
+TARGETS=nodejs browser
 MODE=release
 
 RUST_SRC = $(wildcard src/*.rs)
