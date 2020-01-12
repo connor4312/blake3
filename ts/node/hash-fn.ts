@@ -23,8 +23,7 @@ export function hash(input: HashInput): Buffer;
  */
 export function hash(input: HashInput, encoding: BufferEncoding): string;
 export function hash(input: HashInput, encoding?: BufferEncoding): Buffer | string {
-  // todo: we could probably manipulate or convince the wasm to load into buffers
-  // to avoid an extra memory copy here...
-  const result = Buffer.from(rawHash(normalizeInput(input)));
+  const result = Buffer.alloc(32);
+  rawHash(normalizeInput(input), result);
   return encoding ? result.toString(encoding) : result;
 }

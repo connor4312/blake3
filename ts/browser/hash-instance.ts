@@ -6,7 +6,7 @@ import { Blake3Hash } from '../../pkg/browser/blake3';
 /**
  * @inheritdoc
  */
-export class BrowserHash extends BaseHash {
+export class BrowserHash extends BaseHash<Uint8Array> {
   /**
    * @inheritdoc
    * @override
@@ -34,4 +34,4 @@ export class BrowserHash extends BaseHash {
 /**
  * A Node.js crypto-like createHash method.
  */
-export const createHash = () => new BrowserHash(Blake3Hash);
+export const createHash = () => new BrowserHash(Blake3Hash, new Uint8Array(32));

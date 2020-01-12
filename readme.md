@@ -135,7 +135,7 @@ To get set up, you'll need the following. Windows users are recommended to use W
 
 Then, run `make prepare` to install local dependencies.
 
-Finally, `make MODE=debug` will create a build for you; you can leave off MODE=debug for a production release, and certainly should if you want to [benchmark it](#speed).
+Finally, `make` will create a build for you; you can run `make MODE=release` for a production release, and certainly should if you want to [benchmark it](#speed).
 
 - Rust code is compiled from `src/lib.rs` to `pkg/browser` and `pkg/node`
 - TypeScript code is compiled from `ts/*.ts` into `dist`

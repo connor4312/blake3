@@ -1,13 +1,9 @@
 use wasm_bindgen::prelude::*;
-use js_sys::Uint8Array;
 
 #[wasm_bindgen]
-pub fn hash(data: &[u8]) -> Uint8Array {
+pub fn hash(data: &[u8], out: &mut [u8]) {
   let hash = blake3::hash(data);
-
-  unsafe {
-    Uint8Array::view(hash.as_bytes())
-  }
+  out.copy_from_slice(hash.as_bytes());
 }
 
 #[wasm_bindgen]
@@ -28,11 +24,8 @@ impl Blake3Hash {
         self.hasher.update(input_bytes);
     }
 
-    pub fn digest(&mut self) -> Uint8Array {
+    pub fn digest(&mut self, out: &mut [u8]) {
         let output = self.hasher.finalize();
-
-        unsafe {
-          Uint8Array::view(output.as_bytes())
-        }
+        out.copy_from_slice(output.as_bytes());
     }
 }

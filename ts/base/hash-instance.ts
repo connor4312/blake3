@@ -7,12 +7,10 @@ import { BaseHashInput, inputToArray } from './hash-fn';
  * Note that you must call {@link IHash#dispose} or {@link IHash#done} when
  * you're finished with it to free memory.
  */
-export class BaseHash {
+export class BaseHash<T extends Uint8Array> {
   // these are covariant, but typing them better has a runtime overhead
   private hash: Blake3Hash | undefined = new this.rawCtor();
-  private digested: Uint8Array | undefined;
-
-  constructor(private readonly rawCtor: { new(): Blake3Hash }) {}
+  constructor(private readonly rawCtor: { new (): Blake3Hash }, private readonly digested: T) {}
 
   /**
    * Adds the given data to the hash.
@@ -30,12 +28,12 @@ export class BaseHash {
   /**
    * Returns a digest of the hash.
    */
-  digest(): Uint8Array {
+  digest(): T {
     if (!this.hash) {
-      return this.digested!;
+      return this.digested;
     }
 
-    this.digested = this.hash.digest() as Uint8Array;
+    this.hash.digest(this.digested);
     this.hash.free();
     return this.digested;
   }
@@ -45,9 +43,7 @@ export class BaseHash {
    * {@link IHash#digest} is not called in order to free memory.
    */
   dispose() {
-    if (this.hash) {
-      this.hash.free();
-      this.hash = undefined;
-    }
+    this.hash?.free();
+    this.hash = undefined;
   }
 }

@@ -5,7 +5,7 @@ import { Blake3Hash } from '../../pkg/nodejs/blake3';
 /**
  * @inheritdoc
  */
-export class NodeHash extends BaseHash {
+export class NodeHash extends BaseHash<Buffer> {
   /**
    * @inheritdoc
    * @override
@@ -25,7 +25,7 @@ export class NodeHash extends BaseHash {
    */
   digest(encoding: BufferEncoding): string;
   digest(encoding?: BufferEncoding): string | Buffer {
-    const result = Buffer.from(super.digest());
+    const result = super.digest();
     return encoding ? result.toString(encoding) : result;
   }
 }
@@ -33,4 +33,4 @@ export class NodeHash extends BaseHash {
 /**
  * A Node.js crypto-like createHash method.
  */
-export const createHash = () => new NodeHash(Blake3Hash);
+export const createHash = () => new NodeHash(Blake3Hash, Buffer.alloc(32));

@@ -1,5 +1,5 @@
 TARGETS=nodejs browser
-MODE=release
+MODE=dev
 
 RUST_SRC = $(wildcard src/*.rs)
 RUST_OUT = $(patsubst %, pkg/%/blake3_bg.wasm, $(TARGETS))

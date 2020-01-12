@@ -22,7 +22,7 @@ jobs:
         with:
           command: install
           args: wasm-pack
-      - run: make MODE=debug
+      - run: make
       - run: npm test
 
       - uses: actions/upload-artifact@v1

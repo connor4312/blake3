@@ -28,6 +28,7 @@ export function hash(input: HashInput): Uint8Array;
  */
 export function hash(input: HashInput, encoding: BrowserEncoding): string;
 export function hash(input: HashInput, encoding?: BrowserEncoding): Uint8Array | string {
-  const result = rawHash(normalizeInput(input));
+  const result = new Uint8Array(32);
+  rawHash(normalizeInput(input), result);
   return encoding ? mustGetEncoder(encoding)(result) : result;
 }
