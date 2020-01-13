@@ -1,6 +1,6 @@
 import { normalizeInput, HashInput } from './hash-fn';
 import { BaseHash } from '../base';
-import { Blake3Hash } from '../../pkg/nodejs/blake3';
+import { Blake3Hash } from '../../dist/wasm/nodejs/blake3_js';
 
 /**
  * @inheritdoc

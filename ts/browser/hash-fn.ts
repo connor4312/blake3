@@ -1,5 +1,5 @@
 import { BaseHashInput, inputToArray } from '../base/hash-fn';
-import { hash as rawHash } from '../../pkg/browser/blake3';
+import { hash as rawHash } from '../../dist/wasm/browser/blake3_js';
 import { BrowserEncoding, mustGetEncoder } from './encoding';
 
 export { BrowserEncoding as BrowserEncodings } from './encoding';

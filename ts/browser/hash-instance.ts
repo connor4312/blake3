@@ -1,7 +1,7 @@
 import { BaseHash } from '../base';
 import { normalizeInput, HashInput } from './hash-fn';
 import { BrowserEncoding, mustGetEncoder } from './encoding';
-import { Blake3Hash } from '../../pkg/browser/blake3';
+import { Blake3Hash } from '../../dist/wasm/browser/blake3_js';
 
 /**
  * @inheritdoc

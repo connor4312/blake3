@@ -1,5 +1,4 @@
 const { hash } = require('.');
-const { readFileSync } = require('fs');
 const { createHash } = require('crypto');
 
 [
