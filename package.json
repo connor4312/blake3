@@ -1,6 +1,6 @@
 {
   "name": "blake3",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Blake3 hashing for JavaScript",
   "main": "./dist/index",
   "scripts": {
