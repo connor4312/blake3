@@ -84,6 +84,62 @@ describe('browser', () => {
     expect(result).to.equal(inputs.large.hash);
   });
 
+  describe('input encoding', () => {
+    it('hashes a uint8array', async () => {
+      const contents = [...new Uint8Array(Buffer.from(inputs.hello.input))];
+      const result = await page.evaluate(
+        `blake3.hash(new Uint8Array([${contents.join(',')}]), "hex")`,
+      );
+      expect(result).to.equal(inputs.hello.hash);
+    });
+
+    it('hashes a string', async () => {
+      const result = await page.evaluate('blake3.hash(inputs.large.input, "hex")');
+      expect(result).to.equal(inputs.large.hash);
+    });
+  });
+
+  describe('output encoding', () => {
+    const tcases = [
+      { encoding: 'hex', expected: inputs.hello.hash },
+      { encoding: 'base64', expected: Buffer.from(inputs.hello.hash, 'hex').toString('base64') },
+      { encoding: 'utf8', expected: Buffer.from(inputs.hello.hash, 'hex').toString('utf8') },
+    ];
+
+    tcases.forEach(({ encoding, expected }) =>
+      it(encoding, async () => {
+        const result = await page.evaluate(`blake3.hash(inputs.hello.input, "${encoding}")`);
+        expect(result).to.deep.equal(expected);
+      }),
+    );
+
+    it('raw', async () => {
+      const result = (await page.evaluate(`blake3.hash(inputs.hello.input)`)) as {
+        length: number;
+        [n: number]: number;
+      };
+      const actual = Buffer.alloc(32);
+      for (let i = 0; i < actual.length; i++) {
+        actual[i] = result[i]; // it comes as a plain object, we need to convert it to a buffer
+      }
+      expect(actual).to.deep.equal(Buffer.from(inputs.hello.hash, 'hex'));
+    });
+  });
+
+  describe('hash class', () => {
+    it('digests', async () => {
+      const result = await page.evaluate(`(() => {
+        const hash = blake3.createHash();
+        ${[...Buffer.from(inputs.hello.input)]
+          .map(byte => `hash.update(new Uint8Array([${byte}]));`)
+          .join('\n')}
+        return hash.digest('hex');
+      })()`);
+
+      expect(result).to.equal(inputs.hello.hash);
+    });
+  });
+
   after(() => {
     page?.browser().close();
     server?.close();

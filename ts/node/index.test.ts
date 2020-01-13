@@ -6,10 +6,6 @@ import { ReadableStreamBuffer } from 'stream-buffers';
 const toHex = (arr: Uint8Array) => Buffer.from(arr).toString('hex');
 
 describe('node.js', () => {
-  it('hashes a string', () => {
-    expect(hash(inputs.large.input, 'hex')).to.equal(inputs.large.hash);
-  });
-
   describe('encoding', () => {
     it('hashes a buffer', () => {
       expect(hash(Buffer.from(inputs.large.input), 'hex')).to.equal(inputs.large.hash);
