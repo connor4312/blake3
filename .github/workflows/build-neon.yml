@@ -1,0 +1,60 @@
+on:
+  push:
+    branches:
+      - generate-binary
+
+name: Generate Binaries
+
+jobs:
+  build:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@master
+      - run: mkdir dist
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+          target: wasm32-unknown-unknown
+
+      # node 13 binary --------------------------------------------------------
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - run: npm install neon-cli
+      - run: ../node_modules/.bin/neon build --release
+        working-directory: rs
+      - run: mv rs/native/index.node dist/${{ matrix.os }}-13.node
+
+      # node 12 binary --------------------------------------------------------
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - run: ../node_modules/.bin/neon build --release
+        working-directory: rs
+      - run: mv rs/native/index.node dist/${{ matrix.os }}-12.node
+
+      # node 11 binary --------------------------------------------------------
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '11.x'
+      - run: ../node_modules/.bin/neon build --release
+        working-directory: rs
+      - run: mv rs/native/index.node dist/${{ matrix.os }}-11.node
+
+      # node 10 binary --------------------------------------------------------
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+      - run: ../node_modules/.bin/neon build --release
+        working-directory: rs
+      - run: mv rs/native/index.node dist/${{ matrix.os }}-10.node
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: dist
+          path: dist

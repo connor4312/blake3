@@ -1,4 +1,5 @@
-const { hash } = require('.');
+const { hash: hashNative } = require('./dist/native.node');
+const { hash: hashWasm } = require('.');
 const { createHash } = require('crypto');
 
 [
@@ -7,14 +8,15 @@ const { createHash } = require('crypto');
   { size: '6MB', data: Buffer.alloc(1024 * 1024 * 6) },
 ].forEach(({ size, data }) =>
   suite(size, () => {
-    ['md5', 'sha1', 'sha256'].forEach(alg =>
-      bench(alg, () =>
-        createHash(alg)
-          .update(data)
-          .digest(),
-      ),
-    );
+    // ['md5', 'sha1', 'sha256'].forEach(alg =>
+    //   bench(alg, () =>
+    //     createHash(alg)
+    //       .update(data)
+    //       .digest(),
+    //   ),
+    // );
 
-    bench('blake3', () => hash(data));
+    bench('wasm', () => hashWasm(data));
+    bench('native', () => hashNative(data));
   }),
 );

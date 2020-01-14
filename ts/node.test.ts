@@ -1,11 +1,12 @@
-import { hash, createHash } from './';
+import * as wasm from './node';
+import * as native from './node';
 import { expect } from 'chai';
-import { inputs } from '../base/test-helpers';
+import { inputs } from './base/test-helpers';
 import { ReadableStreamBuffer } from 'stream-buffers';
 
 const toHex = (arr: Uint8Array) => Buffer.from(arr).toString('hex');
 
-describe('node.js', () => {
+function suite({ hash, createHash }: (typeof wasm) | (typeof native)) {
   describe('encoding', () => {
     it('hashes a buffer', () => {
       expect(hash(Buffer.from(inputs.large.input), 'hex')).to.equal(inputs.large.hash);
@@ -67,4 +68,7 @@ describe('node.js', () => {
       });
     });
   });
-});
+};
+
+describe('node.js wasm', () => suite(wasm));
+describe('node.js native', () => suite(native));

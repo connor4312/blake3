@@ -2,7 +2,7 @@ import { BaseHashInput, inputToArray } from '../base/hash-fn';
 import { hash as rawHash } from '../../dist/wasm/nodejs/blake3_js';
 
 /**
- * Input used for browser-based hashes.
+ * Input used for node-based hashes.
  */
 export type HashInput = BaseHashInput | string;
 
