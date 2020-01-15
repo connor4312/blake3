@@ -34,6 +34,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '12.x'
+      - run: npm install neon-cli
       - run: ../node_modules/.bin/neon build --release
         working-directory: rs
       - run: mv rs/native/index.node dist/${{ matrix.os }}-12.node
@@ -42,6 +43,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '11.x'
+      - run: npm install neon-cli
       - run: ../node_modules/.bin/neon build --release
         working-directory: rs
       - run: mv rs/native/index.node dist/${{ matrix.os }}-11.node
@@ -50,6 +52,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '10.x'
+      - run: npm install neon-cli
       - run: ../node_modules/.bin/neon build --release
         working-directory: rs
       - run: mv rs/native/index.node dist/${{ matrix.os }}-10.node
