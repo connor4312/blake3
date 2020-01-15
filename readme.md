@@ -1,6 +1,6 @@
-# blake3
+# BLAKE3
 
-[Blake3](https://github.com/BLAKE3-team/BLAKE3) running in JavaScript (node.js and browsers) via native bindings, where available, or WebAssembly.
+[BLAKE3](https://github.com/BLAKE3-team/BLAKE3) running in JavaScript (node.js and browsers) via native bindings, where available, or WebAssembly.
 
 ```
 npm install blake3
@@ -33,7 +33,7 @@ const { hash, createHash } = require('blake3');
 
 hash('some string'); // => hash a string to a uint8array
 
-// Stream like you normally do:
+// Update incrementally (Node and Browsers):
 const hash = createHash();
 stream.on('data', d => hash.update(hash));
 stream.on('error', err => {
@@ -42,6 +42,11 @@ stream.on('error', err => {
   throw err;
 });
 stream.on('end', () => finishedHash(hash.digest()));
+
+// Or, in Node, it's also a transform stream:
+createReadStream('file.txt')
+  .pipe(createHash())
+  .on('data', hash => console.log(hash.toString('hex')));
 ```
 
 ## API
@@ -56,7 +61,13 @@ Returns a hash for the given data. The data can be a string, buffer, typedarray,
 
 #### `createHash()`
 
-Creates a new hasher instance:
+Creates a new hasher instance. In Node.js, this is also a transform stream.
+
+```js
+createReadStream('file.txt')
+  .pipe(createHash())
+  .on('data', hash => console.log(hash.toString('hex')));
+```
 
 #### `hash.update(data: BinaryLike): this`
 

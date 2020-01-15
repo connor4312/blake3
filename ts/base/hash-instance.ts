@@ -29,7 +29,7 @@ export interface IHash<T> {
 /**
  * Base implementation of hashing.
  */
-export abstract class BaseHash<T extends Uint8Array> implements IHash<T> {
+export class BaseHash<T extends Uint8Array> implements IHash<T> {
   // these are covariant, but typing them better has a runtime overhead
   private hash: Blake3Hash | undefined = new this.rawCtor();
   constructor(private readonly rawCtor: { new (): Blake3Hash }, private readonly digested: T) {}

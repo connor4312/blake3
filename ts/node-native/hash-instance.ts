@@ -2,11 +2,12 @@ import { normalizeInput } from './hash-fn';
 import { IHash } from '../base';
 import { HashInput } from '../node/hash-fn';
 import native from './native';
+import { Transform, TransformCallback } from 'stream';
 
 /**
  * @inheritdoc
  */
-export class NativeHash implements IHash<Buffer> {
+export class NativeHash extends Transform implements IHash<Buffer> {
   private readonly hash = new native.Hash();
 
   /**
@@ -37,6 +38,23 @@ export class NativeHash implements IHash<Buffer> {
    * @inheritdoc
    */
   public dispose() {}
+
+  /**
+   * @inheritdoc
+   * @hidden
+   */
+  _transform(chunk: Buffer | string, encoding: string, callback: TransformCallback): void {
+    this.update(chunk, encoding as BufferEncoding);
+    callback();
+  }
+
+  /**
+   * @inheritdoc
+   * @hidden
+   */
+  _flush(callback: TransformCallback): void {
+    callback(null, this.digest());
+  }
 }
 
 /**

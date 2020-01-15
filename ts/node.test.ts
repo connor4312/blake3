@@ -67,6 +67,20 @@ function suite({ hash, createHash }: typeof wasm | typeof native) {
         callback();
       });
     });
+
+    it('is a transform stream', callback => {
+      const buffer = new ReadableStreamBuffer();
+      buffer.put(Buffer.from(inputs.large.input));
+      buffer.stop();
+
+      buffer
+        .pipe(createHash())
+        .on('error', callback)
+        .on('data', hash => {
+          expect(toHex(hash)).to.equal(inputs.large.hash);
+          callback();
+        });
+    });
   });
 }
 

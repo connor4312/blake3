@@ -61,7 +61,7 @@ const minVersion = 64;
                       name: 'patch node-gyp for VS 2019',
                       run:
                         'npm install --global node-gyp@latest\r\nnpm prefix -g | % {npm config set node_gyp "$_\\node_modules\\node-gyp\\bin\\node-gyp.js"}',
-                      if: 'matrix.os == \'windows-latest\'',
+                      if: "matrix.os == 'windows-latest'",
                     },
                     { run: './node_modules/.bin/rimraf rs/native/target' },
                   ]),
