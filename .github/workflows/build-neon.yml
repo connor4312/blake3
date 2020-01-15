@@ -1,59 +1,65 @@
-on:
+name: Generate Binaries
+'on':
   push:
     branches:
       - generate-binary
-
-name: Generate Binaries
-
 jobs:
   build:
-    name: Test
-    runs-on: ${{ matrix.os }}
+    name: Build
+    runs-on: '${{ matrix.os }}'
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os:
+          # - macos-latest
+          # - ubuntu-latest
+          - windows-latest
     steps:
       - uses: actions/checkout@master
       - run: mkdir dist
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
-          override: true
           target: wasm32-unknown-unknown
-
-      # node 13 binary --------------------------------------------------------
+          toolchain: nightly
       - uses: actions/setup-node@v1
         with:
-          node-version: '13.x'
-      - run: npm install neon-cli
+          node-version: v13.6.0
+      - run: npm install neon-cli rimraf
       - run: ../node_modules/.bin/neon build --release
         working-directory: rs
-      - run: mv rs/native/index.node dist/${{ matrix.os }}-13.node
-
-      # node 12 binary --------------------------------------------------------
+      - run: 'mv rs/native/index.node dist/${{ matrix.os }}-79.node'
       - uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: v12.14.1
+      - shell: powershell
+        name: patch node-gyp for VS 2019
+        run: "npm install --global node-gyp@latest\r\nnpm prefix -g | % {npm config set node_gyp \"$_\\node_modules\\node-gyp\\bin\\node-gyp.js\"}"
+        if: matrix.os == 'windows-latest'
+      - run: ./node_modules/.bin/rimraf rs/native/target
       - run: ../node_modules/.bin/neon build --release
         working-directory: rs
-      - run: mv rs/native/index.node dist/${{ matrix.os }}-12.node
-
-      # node 11 binary --------------------------------------------------------
+      - run: 'mv rs/native/index.node dist/${{ matrix.os }}-72.node'
       - uses: actions/setup-node@v1
         with:
-          node-version: '11.x'
+          node-version: v11.15.0
+      - shell: powershell
+        name: patch node-gyp for VS 2019
+        run: "npm install --global node-gyp@latest\r\nnpm prefix -g | % {npm config set node_gyp \"$_\\node_modules\\node-gyp\\bin\\node-gyp.js\"}"
+        if: matrix.os == 'windows-latest'
+      - run: ./node_modules/.bin/rimraf rs/native/target
       - run: ../node_modules/.bin/neon build --release
         working-directory: rs
-      - run: mv rs/native/index.node dist/${{ matrix.os }}-11.node
-
-      # node 10 binary --------------------------------------------------------
+      - run: 'mv rs/native/index.node dist/${{ matrix.os }}-67.node'
       - uses: actions/setup-node@v1
         with:
-          node-version: '10.x'
+          node-version: v10.18.1
+      - shell: powershell
+        name: patch node-gyp for VS 2019
+        run: "npm install --global node-gyp@latest\r\nnpm prefix -g | % {npm config set node_gyp \"$_\\node_modules\\node-gyp\\bin\\node-gyp.js\"}"
+        if: matrix.os == 'windows-latest'
+      - run: ./node_modules/.bin/rimraf rs/native/target
       - run: ../node_modules/.bin/neon build --release
         working-directory: rs
-      - run: mv rs/native/index.node dist/${{ matrix.os }}-10.node
-
+      - run: 'mv rs/native/index.node dist/${{ matrix.os }}-64.node'
       - uses: actions/upload-artifact@v1
         with:
           name: dist

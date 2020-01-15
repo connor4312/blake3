@@ -86,3 +86,4 @@ typings/
 /dist
 /*.tgz
 /*.cpuprofile
+/targets.json

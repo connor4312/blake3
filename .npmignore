@@ -3,3 +3,4 @@
 !/pkg
 !/*.ts
 !/*.js
+!/targets.json
