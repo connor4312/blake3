@@ -1,6 +1,10 @@
 # Changelog
 
-## 1.2.0-0 - 2019-01-12 (prerelease)
+## 1.2.0 - 2019-01-14
+
+- add native Node.js bindings
+
+## 1.2.0-0 - 2019-01-14 (prerelease)
 
 - add native Node.js bindings
 

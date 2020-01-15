@@ -87,3 +87,4 @@ typings/
 /*.tgz
 /*.cpuprofile
 /targets.json
+/rs/native/artifacts.json

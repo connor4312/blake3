@@ -11,12 +11,12 @@ import { getMajorVersion, minNodeVersion } from './versions';
 
 const builtPlatforms: { [K in NodeJS.Platform]?: string } = {
   win32: 'windows-latest',
-  linux: 'linux-latest',
+  linux: 'ubuntu-latest',
   darwin: 'macos-latest',
 };
 
 const { version } = require('../../package.json');
-const repoUrl = 'https://github.com/connor4312/blake3';
+const repoUrl = process.env.BLAKE3_REPO_URL || 'https://github.com/connor4312/blake3';
 const issueUrl = `${repoUrl}/issues/new`;
 const targets = require('../../targets.json');
 
@@ -68,7 +68,7 @@ async function download(url: string): Promise<boolean> {
         return;
       }
 
-      pipeline(res, createWriteStream(join(__dirname, 'native.node')), err =>
+      pipeline(res, createWriteStream(join(__dirname, '..', 'native.node')), err =>
         err ? onError(err) : resolve(true),
       );
     });
@@ -80,7 +80,7 @@ async function download(url: string): Promise<boolean> {
 function useNativeImport() {
   const indexFile = join(__dirname, '..', 'index.js');
   const contents = readFileSync(indexFile, 'utf-8');
-  writeFileSync(indexFile, contents.replace('./node', './node-native'));
+  writeFileSync(indexFile, contents.replace('"./node"', '"./node-native"'));
 }
 
 install().catch(fallback);

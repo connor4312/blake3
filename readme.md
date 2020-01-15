@@ -1,6 +1,6 @@
 # blake3
 
-[Blake3](https://github.com/BLAKE3-team/BLAKE3) running in JavaScript (node.js and browsers) via WebAssembly. It works, but is not quite done yet.
+[Blake3](https://github.com/BLAKE3-team/BLAKE3) running in JavaScript (node.js and browsers) via native bindings, where available, or WebAssembly.
 
 ```
 npm install blake3
@@ -98,30 +98,24 @@ Disposes of unmanaged resources. You should _always_ call this if you don't call
 
 > Native Node.js bindings are a work in progress.
 
-You can run benchmarks by installing `npm install -g @c4312/matcha`, then running `matcha benchmark.js`. These are the results running on Node 12 on my MacBook. Blake3 is, for a small amount of data, significantly faster than Node's native hashing, and for large data about the same as SHA256.
+You can run benchmarks by installing `npm install -g @c4312/matcha`, then running `matcha benchmark.js`. These are the results running on Node 12 on my MacBook. Blake3 is significantly faster than Node's built-in hashing.
 
 ```
-    313,000 ops/sec > 64B#md5
-    301,000 ops/sec > 64B#sha1
-    286,000 ops/sec > 64B#sha256
-  1,210,000 ops/sec > 64B#blake3
+  337,000 ops/sec > 64B#md5
+  302,000 ops/sec > 64B#sha1
+  276,000 ops/sec > 64B#sha256
+  752,000 ops/sec > 64B#blake3
 
-      11,600 ops/sec > 64KB#md5
-      15,800 ops/sec > 64KB#sha1
-      7,360 ops/sec > 64KB#sha256
-      7,840 ops/sec > 64KB#blake3
+    11,700 ops/sec > 64KB#md5
+    16,100 ops/sec > 64KB#sha1
+     7,550 ops/sec > 64KB#sha256
+    52,800 ops/sec > 64KB#blake3
 
-        121 ops/sec > 6MB#md5
-        171 ops/sec > 6MB#sha1
-        78.5 ops/sec > 6MB#sha256
-        78.1 ops/sec > 6MB#blake3
+       124 ops/sec > 6MB#md5
+       175 ops/sec > 6MB#sha1
+      80.2 ops/sec > 6MB#sha256
+       518 ops/sec > 6MB#blake3
 ```
-
-You may ask, "blake3 is supposed to be incredibly fast, why is this package slower?" One big tool in Blake's arsenal is friendliness to SIMD instructs, which are still at [the proposal stage](https://github.com/WebAssembly/simd) in WebAssembly, at the time of writing, so we can't take advantage of them. Additionally, today we need to manually copy data into WebAssembly, we're unable to reference the memory we already have in JavaScript ([issue](https://github.com/WebAssembly/design/issues/1162)), which is another step that slows things downs. Finally, WebAssembly VMs are still maturing, and will tend to run slower than optimized native code.
-
-Node's built-in crypto uses the native C/++ code to implement their algorithms, bound to V8, thus they can avoid these performance issues. It's almost certain that a native Rust bindings into Node would be significantly faster, but that's not what this module is (yet). With bindings come significantly increased build complexity for consumers and/or package maintainers, unavailability in browsers, and unavailability in some environments which disallow native extensions.
-
-As WebAssembly matures, it's likely that some or all of these limitations will be lifted. You, as a package consumer, should benefit from them for free as time goes on.
 
 ## Contributing
 
