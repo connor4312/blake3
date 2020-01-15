@@ -1,5 +1,5 @@
 export interface INativeHash {
-  new(): INativeHash;
+  new (): INativeHash;
   update(data: Buffer): void;
   digest(): Buffer;
 }
@@ -12,4 +12,3 @@ export interface INativeModule {
 const native: INativeModule = require('../native.node');
 
 export default native;
-

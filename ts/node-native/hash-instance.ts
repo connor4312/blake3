@@ -36,9 +36,7 @@ export class NativeHash implements IHash<Buffer> {
   /**
    * @inheritdoc
    */
-  public dispose() {
-
-  }
+  public dispose() {}
 }
 
 /**

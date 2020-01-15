@@ -6,7 +6,7 @@ import { ReadableStreamBuffer } from 'stream-buffers';
 
 const toHex = (arr: Uint8Array) => Buffer.from(arr).toString('hex');
 
-function suite({ hash, createHash }: (typeof wasm) | (typeof native)) {
+function suite({ hash, createHash }: typeof wasm | typeof native) {
   describe('encoding', () => {
     it('hashes a buffer', () => {
       expect(hash(Buffer.from(inputs.large.input), 'hex')).to.equal(inputs.large.hash);
@@ -68,7 +68,7 @@ function suite({ hash, createHash }: (typeof wasm) | (typeof native)) {
       });
     });
   });
-};
+}
 
 describe('node.js wasm', () => suite(wasm));
 describe('node.js native', () => suite(native));

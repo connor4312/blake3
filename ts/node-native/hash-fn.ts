@@ -14,7 +14,7 @@ export const normalizeInput = (input: HashInput, encoding?: BufferEncoding): Buf
   }
 
   return Buffer.from(input as Uint8Array);
-}
+};
 
 /**
  * Returns a blake3 hash of the input, returning the binary hash data.

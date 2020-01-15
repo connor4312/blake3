@@ -4,6 +4,7 @@
   "description": "Blake3 hashing for JavaScript",
   "main": "./dist/index",
   "scripts": {
+    "install": "node -e \"try{require('./dist/install')}catch(e){}\"",
     "prepack": "make clean && make MODE=release && npm test",
     "test": "mocha --require source-map-support/register --recursive \"dist/**/*.test.js\" --timeout 5000",
     "fmt": "prettier --write \"ts/**/*.ts\" \"*.md\"",

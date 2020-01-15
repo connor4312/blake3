@@ -17,7 +17,7 @@ export interface IHash<T> {
   /**
    * Returns a digest of the hash.
    */
-  digest(): T ;
+  digest(): T;
 
   /**
    * Frees data associated with the hash. This *must* be called if
