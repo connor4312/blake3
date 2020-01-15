@@ -46,7 +46,7 @@ async function install() {
   console.log(
     `Retrieving native BLAKE3 bindings for Node v${majorVersion} on ${process.platform}...`,
   );
-  await download(`${repoUrl}/releases/download/v${version}/${platform}-${majorVersion}.node`);
+  await download(`${repoUrl}/releases/download/v${version}/${platform}-${apiVersion}.node`);
   useNativeImport();
   console.log('BLAKE3 bindings retrieved');
 }
