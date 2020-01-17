@@ -1,13 +1,14 @@
 import { normalizeInput } from './hash-fn';
-import { IHash } from '../base';
 import { HashInput } from '../node/hash-fn';
 import native from './native';
 import { Transform, TransformCallback } from 'stream';
+import { INodeHash } from '../node/hash-instance';
+import { defaultHashLength, IBaseHashOptions } from '../base/hash-fn';
 
 /**
  * @inheritdoc
  */
-export class NativeHash extends Transform implements IHash<Buffer> {
+export class NativeHash extends Transform implements INodeHash {
   private readonly hash = new native.Hash();
 
   /**
@@ -21,17 +22,26 @@ export class NativeHash extends Transform implements IHash<Buffer> {
 
   /**
    * @inheritdoc
-   * @override
    */
-  public digest(): Buffer;
+  public digest(encoding?: IBaseHashOptions): Buffer;
+  public digest(encoding: undefined, options: IBaseHashOptions): Buffer;
+  public digest(encoding: string, options?: IBaseHashOptions): string;
+  public digest(
+    encoding?: IBaseHashOptions | BufferEncoding,
+    options?: IBaseHashOptions,
+  ): string | Buffer {
+    let resolvedOpts: IBaseHashOptions | undefined;
+    let resolvedEnc: BufferEncoding | undefined;
+    if (encoding && typeof encoding === 'object') {
+      resolvedOpts = encoding;
+      resolvedEnc = undefined;
+    } else {
+      resolvedOpts = options;
+      resolvedEnc = encoding;
+    }
 
-  /**
-   * Returns a digest of the hash with the given encoding.
-   */
-  public digest(encoding: BufferEncoding): string;
-  public digest(encoding?: BufferEncoding): string | Buffer {
-    const result = this.hash.digest();
-    return encoding ? result.toString(encoding) : result;
+    const result = this.hash.digest(resolvedOpts?.length ?? defaultHashLength);
+    return resolvedEnc ? result.toString(resolvedEnc) : result;
   }
 
   /**

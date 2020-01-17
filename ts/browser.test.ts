@@ -5,7 +5,7 @@ import handler from 'serve-handler';
 import puppeteer from 'puppeteer';
 import { Server, createServer } from 'http';
 import { AddressInfo } from 'net';
-import { inputs } from '../base/test-helpers';
+import { inputs } from './base/test-helpers';
 import { tmpdir } from 'os';
 import { expect } from 'chai';
 
@@ -40,7 +40,7 @@ describe('browser', () => {
           },
           resolve: {
             alias: {
-              'blake3/browser': resolve(__dirname, '../../', 'browser.js'),
+              'blake3/browser': resolve(__dirname, '../', 'browser.js'),
             },
           },
         },
@@ -80,7 +80,7 @@ describe('browser', () => {
   });
 
   it('hashes a string', async () => {
-    const result = await page.evaluate('blake3.hash(inputs.large.input, "hex")');
+    const result = await page.evaluate('blake3.hash(inputs.large.input, { encoding: "hex" })');
     expect(result).to.equal(inputs.large.hash);
   });
 
@@ -88,14 +88,21 @@ describe('browser', () => {
     it('hashes a uint8array', async () => {
       const contents = [...new Uint8Array(Buffer.from(inputs.hello.input))];
       const result = await page.evaluate(
-        `blake3.hash(new Uint8Array([${contents.join(',')}]), "hex")`,
+        `blake3.hash(new Uint8Array([${contents.join(',')}]), { encoding: "hex" })`,
       );
       expect(result).to.equal(inputs.hello.hash);
     });
 
     it('hashes a string', async () => {
-      const result = await page.evaluate('blake3.hash(inputs.large.input, "hex")');
+      const result = await page.evaluate('blake3.hash(inputs.large.input, { encoding: "hex" })');
       expect(result).to.equal(inputs.large.hash);
+    });
+
+    it('customizes output length', async () => {
+      const result = await page.evaluate(
+        'blake3.hash(inputs.hello.input, { encoding: "hex", length: 16 })',
+      );
+      expect(result).to.equal(inputs.hello.hash.slice(0, 32));
     });
   });
 
@@ -108,7 +115,9 @@ describe('browser', () => {
 
     tcases.forEach(({ encoding, expected }) =>
       it(encoding, async () => {
-        const result = await page.evaluate(`blake3.hash(inputs.hello.input, "${encoding}")`);
+        const result = await page.evaluate(
+          `blake3.hash(inputs.hello.input, { encoding: "${encoding}" })`,
+        );
         expect(result).to.deep.equal(expected);
       }),
     );
@@ -137,6 +146,16 @@ describe('browser', () => {
       })()`);
 
       expect(result).to.equal(inputs.hello.hash);
+    });
+
+    it('customizes the output length', async () => {
+      const result = await page.evaluate(`(() => {
+        const hash = blake3.createHash();
+        hash.update(${JSON.stringify(inputs.hello.input)});
+        return hash.digest('hex', { length: 16 });
+      })()`);
+
+      expect(result).to.equal(inputs.hello.hash.slice(0, 32));
     });
   });
 

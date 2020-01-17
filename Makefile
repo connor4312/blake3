@@ -15,6 +15,14 @@ prepare:
 
 rust: $(RUST_WASM_OUT) $(RUST_NATIVE_OUT)
 
+fmt: fmt-rs fmt-ts
+
+fmt-rs: $(RUST_NATIVE_SRC) $(RUST_WASM_SRC)
+	rustfmt $^
+
+fmt-ts: $(TS_SRC)
+	./node_modules/.bin/prettier --write "ts/**/*.ts" "*.md"
+
 $(RUST_NATIVE_OUT): $(RUST_NATIVE_SRC)
 ifeq ($(MODE), release)
 	cd rs && ../node_modules/.bin/neon build --release
@@ -36,4 +44,4 @@ endif
 clean:
 	rm -rf pkg dist
 
-.PHONY: all clean prepare
+.PHONY: all clean prepare fmt fmt-rs fmt-ts

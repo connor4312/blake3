@@ -2,35 +2,68 @@ import { normalizeInput, HashInput } from './hash-fn';
 import { BaseHash, IHash } from '../base';
 import { Blake3Hash } from '../../dist/wasm/nodejs/blake3_js';
 import { Transform, TransformCallback } from 'stream';
+import { IBaseHashOptions } from '../base/hash-fn';
 
-/**
- * @inheritdoc
- */
-export class NodeHash extends Transform implements IHash<Buffer> {
-  private readonly hash = new BaseHash(Blake3Hash, Buffer.alloc(32));
+export interface INodeHash extends IHash<Buffer> {
+  /**
+   * @inheritdoc
+   * @override
+   */
+  update(data: HashInput, encoding?: BufferEncoding): this;
 
   /**
    * @inheritdoc
    * @override
    */
-  update(data: HashInput, encoding?: BufferEncoding): this {
+  digest(options?: IBaseHashOptions): Buffer;
+
+  /**
+   * Returns a digest of the hash with the given set of hash options.
+   */
+  digest(encoding: undefined, options: IBaseHashOptions): Buffer;
+
+  /**
+   * Returns a digest of the hash with the given encoding.
+   */
+  digest(encoding: BufferEncoding, options?: IBaseHashOptions): string;
+}
+
+/**
+ * @inheritdoc
+ */
+export class NodeHash extends Transform implements IHash<Buffer> {
+  private readonly hash = new BaseHash(Blake3Hash, l => Buffer.alloc(l));
+
+  /**
+   * @inheritdoc
+   */
+  public update(data: HashInput, encoding?: BufferEncoding): this {
     this.hash.update(normalizeInput(data, encoding));
     return this;
   }
 
   /**
    * @inheritdoc
-   * @override
    */
-  digest(): Buffer;
+  public digest(encoding?: IBaseHashOptions): Buffer;
+  public digest(encoding: undefined, options: IBaseHashOptions): Buffer;
+  public digest(encoding: BufferEncoding, options?: IBaseHashOptions): string;
+  public digest(
+    encoding?: IBaseHashOptions | BufferEncoding,
+    options?: IBaseHashOptions,
+  ): string | Buffer {
+    let resolvedOpts: IBaseHashOptions | undefined;
+    let resolvedEnc: BufferEncoding | undefined;
+    if (encoding && typeof encoding === 'object') {
+      resolvedOpts = encoding;
+      resolvedEnc = undefined;
+    } else {
+      resolvedOpts = options;
+      resolvedEnc = encoding;
+    }
 
-  /**
-   * Returns a digest of the hash with the given encoding.
-   */
-  digest(encoding: BufferEncoding): string;
-  digest(encoding?: BufferEncoding): string | Buffer {
-    const result = this.hash.digest();
-    return encoding ? result.toString(encoding) : result;
+    const result = this.hash.digest(resolvedOpts);
+    return resolvedEnc ? result.toString(resolvedEnc) : result;
   }
 
   /**

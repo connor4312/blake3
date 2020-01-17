@@ -1,27 +1,32 @@
 use neon::prelude::*;
 use neon::register_module;
 
-fn reader_to_buffer<'a, T: neon::object::This>(cx: &mut CallContext<'a, T>, output_reader: &mut blake3::OutputReader) -> JsResult<'a, JsValue> {
-  let mut output_buffer = cx.buffer(blake3::OUT_LEN as u32)?;
-  cx.borrow_mut(&mut output_buffer, |data| {
-    output_reader.fill(data.as_mut_slice());
-  });
+fn reader_to_buffer<'a, T: neon::object::This>(
+    cx: &mut CallContext<'a, T>,
+    output_reader: &mut blake3::OutputReader,
+    length: u32,
+) -> JsResult<'a, JsValue> {
+    let mut output_buffer = cx.buffer(length)?;
+    cx.borrow_mut(&mut output_buffer, |data| {
+        output_reader.fill(data.as_mut_slice());
+    });
 
-  Ok(output_buffer.upcast())
+    Ok(output_buffer.upcast())
 }
 
 pub fn hash(mut cx: FunctionContext) -> JsResult<JsValue> {
-  let input_buffer = cx.argument::<JsBuffer>(0)?;
-  let input_bytes = cx.borrow(&input_buffer, |data| data.as_slice::<u8>());
+    let input_buffer = cx.argument::<JsBuffer>(0)?;
+    let length = cx.argument::<JsNumber>(1)?;
+    let input_bytes = cx.borrow(&input_buffer, |data| data.as_slice::<u8>());
 
-  let mut hasher = blake3::Hasher::new();
-  hasher.update(input_bytes);
-  let mut reader = hasher.finalize_xof();
-  reader_to_buffer(&mut cx, &mut reader)
+    let mut hasher = blake3::Hasher::new();
+    hasher.update(input_bytes);
+    let mut reader = hasher.finalize_xof();
+    reader_to_buffer(&mut cx, &mut reader, length.value() as u32)
 }
 
 pub struct Blake3Hash {
-  hasher: blake3::Hasher,
+    hasher: blake3::Hasher,
 }
 
 declare_types! {
@@ -47,6 +52,7 @@ declare_types! {
     }
 
     method digest(mut cx) {
+      let length = cx.argument::<JsNumber>(0)?;
       let this = cx.this();
       let mut reader = {
         let guard = cx.lock();
@@ -54,13 +60,13 @@ declare_types! {
         instance.hasher.finalize_xof()
       };
 
-      reader_to_buffer(&mut cx, &mut reader)
+      reader_to_buffer(&mut cx, &mut reader, length.value() as u32)
     }
   }
 }
 
 register_module!(mut m, {
-  m.export_function("hash", hash)?;
-  m.export_class::<JsHash>("Hasher")?;
-  Ok(())
+    m.export_function("hash", hash)?;
+    m.export_class::<JsHash>("Hasher")?;
+    Ok(())
 });

@@ -68,6 +68,12 @@ async function download(url: string): Promise<boolean> {
         return;
       }
 
+      if (!res.statusCode || res.statusCode >= 300) {
+        console.error(`Unexpected ${res.statusCode} from ${url}`);
+        resolve(false);
+        return;
+      }
+
       pipeline(res, createWriteStream(join(__dirname, '..', 'native.node')), err =>
         err ? onError(err) : resolve(true),
       );

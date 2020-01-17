@@ -1,5 +1,5 @@
 import { Blake3Hash } from '../../dist/wasm/nodejs/blake3_js';
-import { BaseHashInput, inputToArray } from './hash-fn';
+import { BaseHashInput, inputToArray, IBaseHashOptions, defaultHashLength } from './hash-fn';
 
 /**
  * A blake3 hash. Quite similar to Node's crypto hashing.
@@ -17,7 +17,7 @@ export interface IHash<T> {
   /**
    * Returns a digest of the hash.
    */
-  digest(): T;
+  digest(options?: IBaseHashOptions): T;
 
   /**
    * Frees data associated with the hash. This *must* be called if
@@ -32,14 +32,19 @@ export interface IHash<T> {
 export class BaseHash<T extends Uint8Array> implements IHash<T> {
   // these are covariant, but typing them better has a runtime overhead
   private hash: Blake3Hash | undefined = new this.rawCtor();
-  constructor(private readonly rawCtor: { new (): Blake3Hash }, private readonly digested: T) {}
+  private digested?: T;
+
+  constructor(
+    private readonly rawCtor: { new (): Blake3Hash },
+    private readonly alloc: (length: number) => T,
+  ) {}
 
   /**
    * @inheritdoc
    */
   update(data: BaseHashInput): this {
     if (!this.hash) {
-      throw new Error('Cannot continue hashing after digest() has been called');
+      throw new Error('Cannot continue hashing after digest() or dispose() has been called');
     }
 
     this.hash.update(inputToArray(data));
@@ -49,11 +54,16 @@ export class BaseHash<T extends Uint8Array> implements IHash<T> {
   /**
    * @inheritdoc
    */
-  digest(): T {
-    if (!this.hash) {
+  digest(options?: IBaseHashOptions): T {
+    if (this.digested) {
       return this.digested;
     }
 
+    if (!this.hash) {
+      throw new Error('Cannot call digest() after dipose() has been called');
+    }
+
+    this.digested = this.alloc(options?.length ?? defaultHashLength);
     this.hash.digest(this.digested);
     this.hash.free();
     return this.digested;

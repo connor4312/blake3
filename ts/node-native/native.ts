@@ -1,12 +1,12 @@
 export interface INativeHash {
   new (): INativeHash;
   update(data: Buffer): void;
-  digest(): Buffer;
+  digest(length: number): Buffer;
 }
 
 export interface INativeModule {
   Hash: INativeHash;
-  hash(input: Buffer): Buffer;
+  hash(input: Buffer, length: number): Buffer;
 }
 
 const native: INativeModule = require('../native.node');

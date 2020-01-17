@@ -2,8 +2,10 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub fn hash(data: &[u8], out: &mut [u8]) {
-  let hash = blake3::hash(data);
-  out.copy_from_slice(hash.as_bytes());
+    let mut hasher = blake3::Hasher::new();
+    hasher.update(data);
+    let mut reader = hasher.finalize_xof();
+    reader.fill(out);
 }
 
 #[wasm_bindgen]
@@ -15,7 +17,7 @@ pub struct Blake3Hash {
 impl Blake3Hash {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Blake3Hash {
-      Blake3Hash {
+        Blake3Hash {
             hasher: blake3::Hasher::new(),
         }
     }
@@ -25,7 +27,7 @@ impl Blake3Hash {
     }
 
     pub fn digest(&mut self, out: &mut [u8]) {
-        let output = self.hasher.finalize();
-        out.copy_from_slice(output.as_bytes());
+        let mut reader = self.hasher.finalize_xof();
+        reader.fill(out);
     }
 }

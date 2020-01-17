@@ -9,15 +9,28 @@ const toHex = (arr: Uint8Array) => Buffer.from(arr).toString('hex');
 function suite({ hash, createHash }: typeof wasm | typeof native) {
   describe('encoding', () => {
     it('hashes a buffer', () => {
-      expect(hash(Buffer.from(inputs.large.input), 'hex')).to.equal(inputs.large.hash);
+      expect(hash(Buffer.from(inputs.large.input), { encoding: 'hex' })).to.equal(
+        inputs.large.hash,
+      );
     });
 
     it('hashes a string', () => {
-      expect(hash(inputs.large.input, 'hex')).to.equal(inputs.large.hash);
+      expect(hash(inputs.large.input, { encoding: 'hex' })).to.equal(inputs.large.hash);
     });
 
     it('hashes an arraybuffer', () => {
-      expect(hash(Buffer.from(inputs.large.input).buffer, 'hex')).to.equal(inputs.large.hash);
+      expect(hash(Buffer.from(inputs.large.input).buffer, { encoding: 'hex' })).to.equal(
+        inputs.large.hash,
+      );
+    });
+
+    it('customizes the output length', () => {
+      expect(hash(inputs.hello.input, { length: 16 })).to.deep.equal(
+        Buffer.from(inputs.hello.hash, 'hex').slice(0, 16),
+      );
+      expect(hash(inputs.hello.input, { length: 16, encoding: 'hex' })).to.deep.equal(
+        inputs.hello.hash.slice(0, 32),
+      );
     });
   });
 
@@ -80,6 +93,12 @@ function suite({ hash, createHash }: typeof wasm | typeof native) {
           expect(toHex(hash)).to.equal(inputs.large.hash);
           callback();
         });
+    });
+
+    it('customizes the output length', () => {
+      const hash = createHash();
+      hash.update(inputs.hello.input);
+      expect(hash.digest('hex', { length: 16 })).to.equal(inputs.hello.hash.slice(0, 32));
     });
   });
 }

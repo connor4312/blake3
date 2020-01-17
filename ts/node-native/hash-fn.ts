@@ -1,5 +1,6 @@
 import native from './native';
 import { HashInput } from '../node/hash-fn';
+import { IBaseHashOptions, defaultHashLength } from '../base/hash-fn';
 
 /**
  * @hidden
@@ -19,14 +20,21 @@ export const normalizeInput = (input: HashInput, encoding?: BufferEncoding): Buf
 /**
  * Returns a blake3 hash of the input, returning the binary hash data.
  */
-export function hash(input: HashInput): Buffer;
+export function hash(input: HashInput, options?: IBaseHashOptions): Buffer;
 
 /**
  * Returns a blake3 hash of the input, returning the hash encoding with the
  * requested encoding.
  */
-export function hash(input: HashInput, encoding: BufferEncoding): string;
-export function hash(input: HashInput, encoding?: BufferEncoding): Buffer | string {
-  const result = native.hash(normalizeInput(input));
+export function hash(
+  input: HashInput,
+  options: IBaseHashOptions & { encoding: BufferEncoding },
+): string;
+
+export function hash(
+  input: HashInput,
+  { encoding, length = defaultHashLength }: IBaseHashOptions & { encoding?: BufferEncoding } = {},
+): Buffer | string {
+  const result = native.hash(normalizeInput(input), length);
   return encoding ? result.toString(encoding) : result;
 }
