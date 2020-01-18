@@ -44,4 +44,12 @@ endif
 clean:
 	rm -rf pkg dist
 
-.PHONY: all clean prepare fmt fmt-rs fmt-ts
+prepare-binaries: $(TS_OUT)
+	git checkout generate-binary
+	git reset --hard origin/master
+	node dist/build/generate-tasks
+	git add . && git commit -m "generate build tasks" || echo "No update to build tasks"
+	git push -u origin generate-binary -f
+	git checkout -
+
+.PHONY: all clean prepare fmt fmt-rs fmt-ts prepare-binaries

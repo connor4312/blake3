@@ -146,3 +146,14 @@ Finally, `make` will create a build for you; you can run `make MODE=release` for
 
 - Rust code is compiled from `src/lib.rs` to `pkg/browser` and `pkg/node`
 - TypeScript code is compiled from `ts/*.ts` into `dist`
+
+### Publishing
+
+In case I get hit by a bus or get other contributors, these are the steps for publishing:
+
+1. Get all your code ready to go in master, pushed up to Github.
+2. Run `make prepare-binaries`. This will update the branch `generate-binary`, which kicks off a build via Github actions to create `.node` binaries for every relevant Node.js version.
+3. When the build completes, it'll generate a zip file of artifacts. Download those.
+4. Back on master, run `npm version <type>` to update the version in git. `git push --tags`.
+5. On Github, upload the contents of the artifacts folder to the release for the newly tagged version.
+6. Run `npm publish`.
