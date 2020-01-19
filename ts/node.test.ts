@@ -1,5 +1,5 @@
 import * as wasm from './node';
-import * as native from './node';
+import * as native from './node-native';
 import { expect } from 'chai';
 import { inputs } from './base/test-helpers';
 import { ReadableStreamBuffer } from 'stream-buffers';

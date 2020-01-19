@@ -1,4 +1,5 @@
-const { hash } = require('blake3');
+const { hash: hashWasm } = require('./dist/node');
+const { hash: hashNative } = require('./dist/node-native');
 const { createHash } = require('crypto');
 
 [
@@ -15,6 +16,7 @@ const { createHash } = require('crypto');
       ),
     );
 
-    bench('blake3', () => hash(data));
+    bench('blake3 wasm', () => hashWasm(data));
+    bench('blake3 native', () => hashNative(data));
   }),
 );

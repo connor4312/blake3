@@ -1,4 +1,3 @@
-import { Blake3Hash } from '../../dist/wasm/nodejs/blake3_js';
 import { BaseHashInput, inputToArray, IBaseHashOptions, defaultHashLength } from './hash-fn';
 
 /**
@@ -7,7 +6,7 @@ import { BaseHashInput, inputToArray, IBaseHashOptions, defaultHashLength } from
  * Note that you must call {@link IHash#dispose} or {@link IHash#done} when
  * you're finished with it to free memory.
  */
-export interface IHash<T> {
+export interface IHasher<T> {
   /**
    * Adds the given data to the hash.
    * @throws {Error} if {@link IHash#digest} has already been called.
@@ -27,17 +26,25 @@ export interface IHash<T> {
 }
 
 /**
+ * @hidden
+ */
+export interface IInternalHash {
+  free(): void;
+  update(bytes: Uint8Array): void;
+  digest(into: Uint8Array): void;
+}
+
+/**
  * Base implementation of hashing.
  */
-export class BaseHash<T extends Uint8Array> implements IHash<T> {
+export class BaseHash<T extends Uint8Array> implements IHasher<T> {
   // these are covariant, but typing them better has a runtime overhead
-  private hash: Blake3Hash | undefined = new this.rawCtor();
+  private hash: IInternalHash | undefined;
   private digested?: T;
 
-  constructor(
-    private readonly rawCtor: { new (): Blake3Hash },
-    private readonly alloc: (length: number) => T,
-  ) {}
+  constructor(implementation: IInternalHash, private readonly alloc: (length: number) => T) {
+    this.hash = implementation;
+  }
 
   /**
    * @inheritdoc

@@ -1,11 +1,12 @@
 export interface INativeHash {
   new (): INativeHash;
-  update(data: Buffer): void;
-  digest(length: number): Buffer;
+  update(data: Uint8Array): void;
+  digest(targte: Uint8Array): void;
+  free(): void;
 }
 
 export interface INativeModule {
-  Hash: INativeHash;
+  Hasher: INativeHash;
   hash(input: Buffer, length: number): Buffer;
 }
 

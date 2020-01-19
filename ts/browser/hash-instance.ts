@@ -1,7 +1,7 @@
 import { BaseHash } from '../base';
 import { normalizeInput, HashInput } from './hash-fn';
 import { BrowserEncoding, mustGetEncoder } from './encoding';
-import { Blake3Hash } from '../../dist/wasm/browser/blake3_js';
+import { create_hasher } from '../../dist/wasm/browser/blake3_js';
 import { IBaseHashOptions } from '../base/hash-fn';
 
 /**
@@ -50,4 +50,4 @@ export class BrowserHash extends BaseHash<Uint8Array> {
 /**
  * A Node.js crypto-like createHash method.
  */
-export const createHash = () => new BrowserHash(Blake3Hash, l => new Uint8Array(l));
+export const createHash = () => new BrowserHash(create_hasher(), l => new Uint8Array(l));

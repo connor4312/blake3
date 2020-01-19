@@ -2,9 +2,27 @@
 
 [BLAKE3](https://github.com/BLAKE3-team/BLAKE3) running in JavaScript (node.js and browsers) via native bindings, where available, or WebAssembly.
 
-```
-npm install blake3
-```
+    npm install blake3
+
+## Table of Contents
+
+- [Quickstart](#quickstart)
+- [API](#api)
+  - [Node.js](#nodejs)
+    - [`hash(data: BinaryLike, encoding?: string): Buffer | string`](#hashdata-binarylike-encoding-string-buffer--string)
+    - [`createHash(): Hash`](#createhash-hash)
+    - [`hash.update(data: BinaryLike): this`](#hashupdatedata-binarylike-this)
+    - [`hash.digest(encoding?: string): Buffer | string`](#hashdigestencoding-string-buffer--string)
+    - [`hash.dispose()`](#hashdispose)
+  - [Browser](#browser)
+    - [`hash(data: BinaryLike, encoding?: string): Uint8Array | string`](#hashdata-binarylike-encoding-string-uint8array--string)
+    - [`createHash(): Hash`](#createhash-hash-1)
+    - [`hash.update(data: BinaryLike): this`](#hashupdatedata-binarylike-this-1)
+    - [`hash.digest(encoding?: string): Uint8Array | string`](#hashdigestencoding-string-uint8array--string)
+    - [`hash.dispose()`](#hashdispose-1)
+- [Speed](#speed)
+- [Contributing](#contributing)
+  - [Publishing](#publishing)
 
 ## Quickstart
 
@@ -59,7 +77,7 @@ The Node API can be imported via `require('blake3')`.
 
 Returns a hash for the given data. The data can be a string, buffer, typedarray, array buffer, or array. If an `encoding` is given, a string will be returned. Otherwise, a Buffer is returned.
 
-#### `createHash()`
+#### `createHash(): Hash`
 
 Creates a new hasher instance. In Node.js, this is also a transform stream.
 
@@ -89,7 +107,7 @@ The browser API can be imported via `import('blake3/browser')`.
 
 Returns a hash for the given data. The data can be a string, buffer, typedarray, array buffer, or array. If an `encoding` is given (may be "hex", "base64", or "utf8"), a string will be returned. Otherwise, a Uint8Array is returned.
 
-#### `createHash()`
+#### `createHash(): Hash`
 
 Creates a new hasher instance:
 
@@ -111,22 +129,20 @@ Disposes of unmanaged resources. You should _always_ call this if you don't call
 
 You can run benchmarks by installing `npm install -g @c4312/matcha`, then running `matcha benchmark.js`. These are the results running on Node 12 on my MacBook. Blake3 is significantly faster than Node's built-in hashing.
 
-```
-  337,000 ops/sec > 64B#md5
-  302,000 ops/sec > 64B#sha1
-  276,000 ops/sec > 64B#sha256
-  752,000 ops/sec > 64B#blake3
+      337,000 ops/sec > 64B#md5
+      302,000 ops/sec > 64B#sha1
+      276,000 ops/sec > 64B#sha256
+      752,000 ops/sec > 64B#blake3
 
-    11,700 ops/sec > 64KB#md5
-    16,100 ops/sec > 64KB#sha1
-     7,550 ops/sec > 64KB#sha256
-    52,800 ops/sec > 64KB#blake3
+        11,700 ops/sec > 64KB#md5
+        16,100 ops/sec > 64KB#sha1
+         7,550 ops/sec > 64KB#sha256
+        52,800 ops/sec > 64KB#blake3
 
-       124 ops/sec > 6MB#md5
-       175 ops/sec > 6MB#sha1
-      80.2 ops/sec > 6MB#sha256
-       518 ops/sec > 6MB#blake3
-```
+           124 ops/sec > 6MB#md5
+           175 ops/sec > 6MB#sha1
+          80.2 ops/sec > 6MB#sha256
+           518 ops/sec > 6MB#blake3
 
 ## Contributing
 
@@ -151,9 +167,9 @@ Finally, `make` will create a build for you; you can run `make MODE=release` for
 
 In case I get hit by a bus or get other contributors, these are the steps for publishing:
 
-1. Get all your code ready to go in master, pushed up to Github.
-2. Run `make prepare-binaries`. This will update the branch `generate-binary`, which kicks off a build via Github actions to create `.node` binaries for every relevant Node.js version.
-3. When the build completes, it'll generate a zip file of artifacts. Download those.
-4. Back on master, run `npm version <type>` to update the version in git. `git push --tags`.
-5. On Github, upload the contents of the artifacts folder to the release for the newly tagged version.
-6. Run `npm publish`.
+1.  Get all your code ready to go in master, pushed up to Github.
+2.  Run `make prepare-binaries`. This will update the branch `generate-binary`, which kicks off a build via Github actions to create `.node` binaries for every relevant Node.js version.
+3.  When the build completes, it'll generate a zip file of artifacts. Download those.
+4.  Back on master, run `npm version <type>` to update the version in git. `git push --tags`.
+5.  On Github, upload the contents of the artifacts folder to the release for the newly tagged version.
+6.  Run `npm publish`.

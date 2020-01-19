@@ -21,6 +21,7 @@ fmt-rs: $(RUST_NATIVE_SRC) $(RUST_WASM_SRC)
 	rustfmt $^
 
 fmt-ts: $(TS_SRC)
+	./node_modules/.bin/remark readme.md -f -o readme.md
 	./node_modules/.bin/prettier --write "ts/**/*.ts" "*.md"
 
 $(RUST_NATIVE_OUT): $(RUST_NATIVE_SRC)

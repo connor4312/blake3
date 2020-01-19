@@ -2,7 +2,13 @@
   "name": "blake3",
   "version": "1.2.0",
   "description": "BLAKE3 hashing for JavaScript: native Node bindings (where available) and WebAssembly",
-  "keywords": ["blake3", "node-addon", "hash", "webassembly", "wasm"],
+  "keywords": [
+    "blake3",
+    "node-addon",
+    "hash",
+    "webassembly",
+    "wasm"
+  ],
   "main": "./dist/index",
   "scripts": {
     "install": "node -e \"try{require('./dist/build/install')}catch(e){}\"",
@@ -39,6 +45,8 @@
     "node-fetch": "^2.6.0",
     "prettier": "^1.19.1",
     "puppeteer": "^2.0.0",
+    "remark-cli": "^7.0.1",
+    "remark-toc": "^6.0.0",
     "rimraf": "^3.0.0",
     "serve-handler": "^6.1.2",
     "source-map-support": "^0.5.16",

@@ -1,10 +1,10 @@
 import { normalizeInput, HashInput } from './hash-fn';
-import { BaseHash, IHash } from '../base';
-import { Blake3Hash } from '../../dist/wasm/nodejs/blake3_js';
+import { BaseHash, IHasher, IInternalHash } from '../base';
 import { Transform, TransformCallback } from 'stream';
 import { IBaseHashOptions } from '../base/hash-fn';
+import { getWasm } from './wasm';
 
-export interface INodeHash extends IHash<Buffer> {
+export interface INodeHash extends IHasher<Buffer> {
   /**
    * @inheritdoc
    * @override
@@ -31,8 +31,13 @@ export interface INodeHash extends IHash<Buffer> {
 /**
  * @inheritdoc
  */
-export class NodeHash extends Transform implements IHash<Buffer> {
-  private readonly hash = new BaseHash(Blake3Hash, l => Buffer.alloc(l));
+export class NodeHash extends Transform implements IHasher<Buffer> {
+  private readonly hash: BaseHash<Buffer>;
+
+  constructor(implementation: IInternalHash) {
+    super();
+    this.hash = new BaseHash(implementation, l => Buffer.alloc(l));
+  }
 
   /**
    * @inheritdoc
@@ -94,4 +99,4 @@ export class NodeHash extends Transform implements IHash<Buffer> {
 /**
  * A Node.js crypto-like createHash method.
  */
-export const createHash = () => new NodeHash();
+export const createHash = () => new NodeHash(getWasm().create_hasher());

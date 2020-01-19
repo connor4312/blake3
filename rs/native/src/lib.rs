@@ -52,15 +52,23 @@ declare_types! {
     }
 
     method digest(mut cx) {
-      let length = cx.argument::<JsNumber>(0)?;
+      let mut target_bytes_ref = cx.argument::<JsBuffer>(0)?;
       let this = cx.this();
-      let mut reader = {
-        let guard = cx.lock();
-        let instance = this.borrow(&guard);
-        instance.hasher.finalize_xof()
-      };
 
-      reader_to_buffer(&mut cx, &mut reader, length.value() as u32)
+      {
+          let guard = cx.lock();
+          let instance = this.borrow(&guard);
+          let target_bytes = target_bytes_ref.borrow_mut(&guard);
+          let mut output_reader = instance.hasher.finalize_xof();
+          output_reader.fill(target_bytes.as_mut_slice());
+      }
+
+        Ok(cx.undefined().upcast())
+    }
+
+    method free(mut cx) {
+      // For compat with wasm code
+      Ok(cx.undefined().upcast())
     }
   }
 }
