@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLAKE3 Hashing Online</title>
+</head>
+
+<body>
+  <div class="container mx-auto">
+    <h1 class="text-6xl">BLAKE3 Hashing</h1>
+    <p>This demo is powered by the <a href="https://github.com/connor4312/blake3"
+        class="text-blue-600 font-mono">blake3</a> npm module.</p>
+
+    <form>
+      <h2 class="text-xl mt-8">Input</h2>
+      <div class="flex encode-selector mt-2">
+        <input class="fancy-radio" type="radio" id="ie-1" name="input-encoding" value="utf-8" checked />
+        <label for="ie-1">utf-8</label>
+        <input class="fancy-radio" type="radio" id="ie-2" name="input-encoding" value="base64" />
+        <label for="ie-2">base64</label>
+        <input class="fancy-radio" type="radio" id="ie-3" name="input-encoding" value="hex" />
+        <label for="ie-3">hex</label>
+      </div>
+      <textarea class="mt-2" name="input" placeholder="Data to hash..." id="hash-input" cols="30" rows="10"></textarea>
+
+      <h2 class="text-xl mt-8">Output</h2>
+      <div class="flex encode-selector mt-2">
+        <input class="fancy-radio" type="radio" id="oe-1" name="output-encoding" value="hex" checked />
+        <label for="oe-1">hex</label>
+        <input class="fancy-radio" type="radio" id="oe-2" name="output-encoding" value="base64" />
+        <label for="oe-2">base64</label>
+
+        <label for="bytes" class="ml-4">Bytes:</label>
+        <input type="number" class="appearance-none border rounded w-20 py-1 px-2 text-gray-700 leading-tight"
+          value="32" id="bytes" min="0">
+      </div>
+      <textarea readonly class="mt-2" name="hash-output" placeholder="Hash will be written here" id="hash-output"
+        cols="30" rows="10"></textarea>
+    </form>
+  </div>
+  <script src="dist/bundle.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+textarea {
+  @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight;
+}
+
+textarea:focus {
+  @apply outline-none shadow-outline;
+}
+
+.encode-selector {
+  @apply flex items-center;
+}
+
+.encode-selector label {
+  @apply mr-3;
+}
+
+.fancy-radio {
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.fancy-radio + label {
+  position: relative;
+  padding-left: 20px;
+}
+
+.fancy-radio + label::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+
+  @apply border-2 border-blue-600 rounded-full;
+}
+
+.fancy-radio + label:hover::before {
+  @apply bg-blue-300;
+}
+
+.fancy-radio:checked + label::before {
+  @apply bg-blue-600;
+}
