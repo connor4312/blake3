@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0 - TBA
+## 2.0.0 - 2019-01-19
 
 - **breaking** the simple `hash` function no longer takes an encoding in its second parameter. Use `hash(data).toString(<encoding>)` instead.
 - allow configuring the hash length in `hash()` and `hasher.digest()`

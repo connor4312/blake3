@@ -49,6 +49,10 @@ export interface IInternalHash<Reader> {
   digest(into: Uint8Array): void;
 }
 
+export interface IHasherDigestOptions extends IBaseHashOptions {
+  dispose?: boolean;
+}
+
 /**
  * Base implementation of hashing.
  */
@@ -79,10 +83,7 @@ export class BaseHash<Binary extends Uint8Array, InternalReader, Reader extends 
   /**
    * @inheritdoc
    */
-  public digest({
-    length = defaultHashLength,
-    dispose = true,
-  }: IBaseHashOptions & { dispose?: boolean } = {}): Binary {
+  public digest({ length = defaultHashLength, dispose = true }: IHasherDigestOptions = {}): Binary {
     if (!this.hash) {
       throw new Error('Cannot call digest() after dipose() has been called');
     }

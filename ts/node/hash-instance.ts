@@ -1,5 +1,5 @@
 import { normalizeInput, HashInput } from './hash-fn';
-import { BaseHash, IHasher, IInternalHash } from '../base';
+import { BaseHash, IHasher, IInternalHash, IHasherDigestOptions } from '../base';
 import { Transform, TransformCallback } from 'stream';
 import { IBaseHashOptions } from '../base/hash-fn';
 import { getWasm } from './wasm';
@@ -59,14 +59,14 @@ export class NodeHash<Reader> extends Transform implements IHasher<Buffer> {
   /**
    * @inheritdoc
    */
-  public digest(encoding?: IBaseHashOptions): Buffer;
-  public digest(encoding: undefined, options: IBaseHashOptions): Buffer;
-  public digest(encoding: BufferEncoding, options?: IBaseHashOptions): string;
+  public digest(encoding?: IHasherDigestOptions): Buffer;
+  public digest(encoding: undefined, options: IHasherDigestOptions): Buffer;
+  public digest(encoding: BufferEncoding, options?: IHasherDigestOptions): string;
   public digest(
-    encoding?: IBaseHashOptions | BufferEncoding,
-    options?: IBaseHashOptions,
+    encoding?: IHasherDigestOptions | BufferEncoding,
+    options?: IHasherDigestOptions,
   ): string | Buffer {
-    let resolvedOpts: IBaseHashOptions | undefined;
+    let resolvedOpts: IHasherDigestOptions | undefined;
     let resolvedEnc: BufferEncoding | undefined;
     if (encoding && typeof encoding === 'object') {
       resolvedOpts = encoding;

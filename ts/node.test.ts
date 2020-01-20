@@ -58,7 +58,7 @@ function suite({ hash, createHash }: typeof wasm | typeof native) {
     });
   });
 
-  describe('hash class', () => {
+  describe('hasher', () => {
     it('digests', callback => {
       const buffer = new ReadableStreamBuffer();
       buffer.put(Buffer.from(inputs.large.input));
@@ -94,6 +94,38 @@ function suite({ hash, createHash }: typeof wasm | typeof native) {
       expect(hash.digest('hex', { length: 16 })).to.equal(
         inputs.hello.hash.slice(0, 16).toString('hex'),
       );
+    });
+
+    it('throws on write after dispose', () => {
+      const hash = createHash();
+      hash.dispose();
+      expect(() => hash.update('')).to.throw(/after dispose/);
+    });
+
+    it('allows taking incremental hashes', () => {
+      const hasher = createHash();
+      hasher.update('hel');
+
+      const hashA = hasher.digest(undefined, { dispose: false });
+      const readA = hasher.reader({ dispose: false });
+
+      hasher.update('lo');
+      const hashB = hasher.digest(undefined, { dispose: false });
+      const readB = hasher.reader({ dispose: false });
+
+      const expectedA = Buffer.from(
+        '3121c5bb1b9193123447ac7cfda042f67f967e7a8cf5c12e7570e25529746e4a',
+        'hex',
+      );
+      expect(hashA).to.deep.equal(expectedA);
+      expect(readA.toBuffer()).to.deep.equal(expectedA);
+
+      expect(hashB).to.deep.equal(inputs.hello.hash);
+      expect(readB.toBuffer()).to.deep.equal(inputs.hello.hash);
+
+      hasher.dispose();
+      readA.dispose();
+      readB.dispose();
     });
   });
 
