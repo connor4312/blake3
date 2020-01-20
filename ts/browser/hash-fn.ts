@@ -1,6 +1,6 @@
-import { BaseHashInput, IBaseHashOptions, inputToArray } from '../base/hash-fn';
+import { BaseHashInput, IBaseHashOptions, inputToArray, defaultHashLength } from '../base/hash-fn';
 import { hash as rawHash } from '../../dist/wasm/browser/blake3_js';
-import { BrowserEncoding, mustGetEncoder } from './encoding';
+import { Hash } from './hash';
 
 /**
  * Input used for browser-based hashes.
@@ -16,24 +16,13 @@ export const normalizeInput = (input: HashInput): Uint8Array =>
   inputToArray(typeof input === 'string' ? textEncoder.encode(input) : input);
 
 /**
- * Returns a blake3 hash of the input, returning the binary hash data.
- */
-export function hash(input: HashInput, options?: IBaseHashOptions): Uint8Array;
-
-/**
- * Returns a blake3 hash of the input, returning the hash encoding with the
- * requested encoding.
+ * Returns a blake3 hash of the input.
  */
 export function hash(
   input: HashInput,
-  options: IBaseHashOptions & { encoding: BrowserEncoding },
-): string;
-
-export function hash(
-  input: HashInput,
-  { encoding, length = 32 }: IBaseHashOptions & { encoding?: BrowserEncoding } = {},
-): Uint8Array | string {
-  const result = new Uint8Array(length);
+  { length = defaultHashLength }: IBaseHashOptions = {},
+): Hash {
+  const result = new Hash(length);
   rawHash(normalizeInput(input), result);
-  return encoding ? mustGetEncoder(encoding)(result) : result;
+  return result;
 }

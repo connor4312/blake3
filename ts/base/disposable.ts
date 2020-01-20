@@ -18,10 +18,10 @@ const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
  * A helper function that calls `.dispose()` on the {@link IDisposable} when
  * the given function (or promise returned by the function) returns.
  */
-export const using = <T>(disposable: IDisposable, fn: () => T): T => {
+export const using = <T, D extends IDisposable>(disposable: D, fn: (d: D) => T): T => {
   let ret: Promise<T> | T;
   try {
-    ret = fn();
+    ret = fn(disposable);
   } catch (e) {
     disposable.dispose();
     throw e;

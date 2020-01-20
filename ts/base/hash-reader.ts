@@ -29,21 +29,16 @@ export interface IHashReader<T> extends IDisposable {
    * the position of the reader.
    */
   read(bytes: number): T;
-
-  /**
-   * Converts first 32 bytes of the hash to a string with the given encoding.
-   */
-  toString(encoding: string): string;
 }
 
 /**
  * Underlying native or wasm module code backing the reader.
  * @hidden
  */
-interface IInternalReader {
+export interface IInternalReader {
   free?(): void;
   fill(target: Uint8Array): void;
-  set_position(position: BigInt): void;
+  set_position(position: bigint): void;
 }
 
 /**
@@ -58,8 +53,14 @@ export abstract class BaseHashReader<T extends Uint8Array> implements IHashReade
   }
 
   public set position(value: bigint) {
+    // to avoid footguns of people using numbers:
+    if (typeof value !== 'bigint') {
+      throw new Error(`Got a ${typeof value} set in to reader.position, expected a bigint`);
+    }
+
     this.boundsCheck(value);
     this.pos = value;
+    this.reader?.set_position(value);
   }
 
   constructor(reader: IInternalReader) {
@@ -74,8 +75,10 @@ export abstract class BaseHashReader<T extends Uint8Array> implements IHashReade
       throw new Error(`Cannot read from a hash after it was disposed`);
     }
 
-    this.boundsCheck(this.pos + BigInt(target.length));
+    const next = this.pos + BigInt(target.length);
+    this.boundsCheck(next);
     this.reader.fill(target);
+    this.position = next;
   }
 
   /**
@@ -94,11 +97,6 @@ export abstract class BaseHashReader<T extends Uint8Array> implements IHashReade
     this.reader?.free?.();
     this.reader = undefined;
   }
-
-  /**
-   * @inheritdoc
-   */
-  public abstract toString(): string;
 
   protected abstract alloc(bytes: number): T;
 

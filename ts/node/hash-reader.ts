@@ -6,7 +6,7 @@ import { defaultHashLength } from '../base/hash-fn';
  */
 export class NodeHashReader extends BaseHashReader<Buffer> {
   /**
-   * @override
+   * Converts first 32 bytes of the hash to a string with the given encoding.
    */
   public toString(encoding: BufferEncoding = 'hex'): string {
     return this.toBuffer().toString(encoding);

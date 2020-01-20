@@ -1,37 +1,34 @@
-import { BaseHash } from '../base';
+import { BaseHash as BaseHasher } from '../base';
 import { normalizeInput, HashInput } from './hash-fn';
 import { BrowserEncoding, mustGetEncoder } from './encoding';
 import { create_hasher } from '../../dist/wasm/browser/blake3_js';
 import { IBaseHashOptions } from '../base/hash-fn';
+import { BrowserHashReader } from './hash-reader';
+import { IInternalReader } from '../base/hash-reader';
+import { Hash } from './hash';
 
 /**
  * @inheritdoc
  */
-export class BrowserHash extends BaseHash<Uint8Array> {
+export class BrowserHasher extends BaseHasher<Hash, IInternalReader, BrowserHashReader> {
   /**
    * @inheritdoc
    * @override
    */
-  update(data: HashInput): this {
+  public update(data: HashInput): this {
     return super.update(normalizeInput(data));
   }
 
   /**
-   * @inheritdoc
-   * @override
-   */
-  digest(): Uint8Array;
-
-  /**
    * Returns a digest of the hash with the given encoding.
    */
-  public digest(encoding?: IBaseHashOptions): Uint8Array;
-  public digest(encoding: undefined, options: IBaseHashOptions): Uint8Array;
+  public digest(options?: IBaseHashOptions): Hash;
+  public digest(encoding: undefined, options: IBaseHashOptions): Hash;
   public digest(encoding: BrowserEncoding, options?: IBaseHashOptions): string;
   public digest(
     encoding?: IBaseHashOptions | BrowserEncoding,
     options?: IBaseHashOptions,
-  ): string | Uint8Array {
+  ): string | Hash {
     let resolvedOpts: IBaseHashOptions | undefined;
     let resolvedEnc: BrowserEncoding | undefined;
     if (encoding && typeof encoding === 'object') {
@@ -50,4 +47,9 @@ export class BrowserHash extends BaseHash<Uint8Array> {
 /**
  * A Node.js crypto-like createHash method.
  */
-export const createHash = () => new BrowserHash(create_hasher(), l => new Uint8Array(l));
+export const createHash = () =>
+  new BrowserHasher(
+    create_hasher(),
+    l => new Hash(l),
+    r => new BrowserHashReader(r),
+  );

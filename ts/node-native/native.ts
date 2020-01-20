@@ -1,8 +1,13 @@
-export interface INativeHash {
+import { IInternalHash } from '../base';
+
+export interface INativeReader {
+  free?(): void;
+  fill(target: Uint8Array): void;
+  set_position(position: Buffer): void;
+}
+
+export interface INativeHash extends IInternalHash<INativeReader> {
   new (): INativeHash;
-  update(data: Uint8Array): void;
-  digest(targte: Uint8Array): void;
-  free(): void;
 }
 
 export interface INativeModule {

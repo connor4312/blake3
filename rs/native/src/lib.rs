@@ -30,47 +30,104 @@ pub struct Blake3Hash {
 }
 
 declare_types! {
-  pub class JsHash for Blake3Hash {
-    init(_) {
-      Ok(Blake3Hash {
-        hasher: blake3::Hasher::new(),
-      })
+    pub class JsHash for Blake3Hash {
+        init(_) {
+            Ok(Blake3Hash {
+                hasher: blake3::Hasher::new(),
+            })
+        }
+
+        method update(mut cx) {
+            let input_buffer = cx.argument::<JsBuffer>(0)?;
+            let mut this = cx.this();
+
+            {
+                let guard = cx.lock();
+                let mut instance = this.borrow_mut(&guard);
+                let input_bytes = input_buffer.borrow(&guard);
+                instance.hasher.update(input_bytes.as_slice::<u8>());
+            }
+
+            Ok(cx.undefined().upcast())
+        }
+
+        method digest(mut cx) {
+            let target_bytes_ref = cx.argument::<JsBuffer>(0)?;
+            let this = cx.this();
+
+            {
+                let guard = cx.lock();
+                let instance = this.borrow(&guard);
+                let target_bytes = target_bytes_ref.borrow(&guard);
+                let mut output_reader = instance.hasher.finalize_xof();
+                output_reader.fill(target_bytes.as_mut_slice());
+            }
+
+            Ok(cx.undefined().upcast())
+        }
+
+        method free(mut cx) {
+            // For compat with wasm code
+            Ok(cx.undefined().upcast())
+        }
+
+        method reader(mut cx) {
+            let this = cx.this();
+            Ok(JsReader::new(&mut cx, vec![this])?.upcast())
+        }
     }
+}
 
-    method update(mut cx) {
-      let input_buffer = cx.argument::<JsBuffer>(0)?;
-      let mut this = cx.this();
+pub struct HashReader {
+    reader: blake3::OutputReader,
+}
 
-      {
-        let guard = cx.lock();
-        let mut instance = this.borrow_mut(&guard);
-        let input_bytes = input_buffer.borrow(&guard);
-        instance.hasher.update(input_bytes.as_slice::<u8>());
-      }
+declare_types! {
+    pub class JsReader for HashReader {
+        init(mut cx) {
+            let hash_ref = cx.argument::<JsHash>(0)?;
+            let reader = cx.borrow(&hash_ref, |h| h.hasher.finalize_xof());
 
-      Ok(cx.undefined().upcast())
+            Ok(HashReader {
+                reader: reader
+            })
+        }
+
+        method fill(mut cx) {
+            let mut target_bytes_ref = cx.argument::<JsBuffer>(0)?;
+            let mut this = cx.this();
+
+            {
+                let guard = cx.lock();
+                let mut instance = this.borrow_mut(&guard);
+                let target_bytes = target_bytes_ref.borrow_mut(&guard);
+                instance.reader.fill(target_bytes.as_mut_slice())
+            }
+
+            Ok(cx.undefined().upcast())
+        }
+
+        method set_position(mut cx) {
+            // Neon bindings don't support bigint, so use a buffer instead
+            // https://github.com/neon-bindings/neon/issues/376
+            let position_arg = cx.argument::<JsBuffer>(0)?;
+            let position_slice = cx.borrow(&position_arg, |p| p.as_slice::<u8>());
+
+            let mut position_array = [0; 8];
+            position_array.copy_from_slice(position_slice);
+
+            let position = u64::from_be_bytes(position_array);
+            let mut this = cx.this();
+
+            {
+                let guard = cx.lock();
+                let mut instance = this.borrow_mut(&guard);
+                instance.reader.set_position(position);
+            }
+
+            Ok(cx.undefined().upcast())
+        }
     }
-
-    method digest(mut cx) {
-      let mut target_bytes_ref = cx.argument::<JsBuffer>(0)?;
-      let this = cx.this();
-
-      {
-          let guard = cx.lock();
-          let instance = this.borrow(&guard);
-          let target_bytes = target_bytes_ref.borrow_mut(&guard);
-          let mut output_reader = instance.hasher.finalize_xof();
-          output_reader.fill(target_bytes.as_mut_slice());
-      }
-
-        Ok(cx.undefined().upcast())
-    }
-
-    method free(mut cx) {
-      // For compat with wasm code
-      Ok(cx.undefined().upcast())
-    }
-  }
 }
 
 register_module!(mut m, {

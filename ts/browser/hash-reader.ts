@@ -1,16 +1,17 @@
 import { BaseHashReader } from '../base/hash-reader';
-import { mustGetEncoder, BrowserEncoding } from './encoding';
-import { defaultHashLength } from '../base/hash-fn';
+import { BrowserEncoding } from './encoding';
+import { Hash } from './hash';
+import { defaultHashLength } from '../base';
 
 /**
  * A hash reader for WebAssembly targets.
  */
-export class BrowserHashReader extends BaseHashReader<Uint8Array> {
+export class BrowserHashReader extends BaseHashReader<Hash> {
   /**
-   * @override
+   * Converts first 32 bytes of the hash to a string with the given encoding.
    */
   public toString(encoding: BrowserEncoding = 'hex'): string {
-    return mustGetEncoder(encoding)(this.toArray());
+    return this.toArray().toString(encoding);
   }
 
   /**
@@ -21,7 +22,7 @@ export class BrowserHashReader extends BaseHashReader<Uint8Array> {
     return this.read(defaultHashLength);
   }
 
-  protected alloc(bytes: number): Uint8Array {
-    return new Uint8Array(bytes);
+  protected alloc(bytes: number): Hash {
+    return new Hash(bytes);
   }
 }

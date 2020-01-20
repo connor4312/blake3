@@ -20,21 +20,9 @@ export const normalizeInput = (input: HashInput, encoding?: BufferEncoding): Buf
 /**
  * Returns a blake3 hash of the input, returning the binary hash data.
  */
-export function hash(input: HashInput, options?: IBaseHashOptions): Buffer;
-
-/**
- * Returns a blake3 hash of the input, returning the hash encoding with the
- * requested encoding.
- */
 export function hash(
   input: HashInput,
-  options: IBaseHashOptions & { encoding: BufferEncoding },
-): string;
-
-export function hash(
-  input: HashInput,
-  { encoding, length = defaultHashLength }: IBaseHashOptions & { encoding?: BufferEncoding } = {},
+  { length = defaultHashLength }: IBaseHashOptions = {},
 ): Buffer | string {
-  const result = native.hash(normalizeInput(input), length);
-  return encoding ? result.toString(encoding) : result;
+  return native.hash(normalizeInput(input), length);
 }

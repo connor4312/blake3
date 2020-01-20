@@ -5,10 +5,13 @@ import handler from 'serve-handler';
 import puppeteer from 'puppeteer';
 import { Server, createServer } from 'http';
 import { AddressInfo } from 'net';
-import { inputs } from './base/test-helpers';
+import { inputs, hello48 } from './base/test-helpers';
 import { tmpdir } from 'os';
 import { expect } from 'chai';
 
+// Much of the browser code is also used in Node's wasm. We test things more
+// thoroughly there because tests are easier to write and debug, these tests
+// are primarily for sanity and checking browser-specific behavior.
 describe('browser', () => {
   const testDir = resolve(tmpdir(), 'blake3-browser-test');
   let server: Server;
@@ -80,43 +83,43 @@ describe('browser', () => {
   });
 
   it('hashes a string', async () => {
-    const result = await page.evaluate('blake3.hash(inputs.large.input, { encoding: "hex" })');
-    expect(result).to.equal(inputs.large.hash);
+    const result = await page.evaluate('blake3.hash(inputs.large.input).toString("hex")');
+    expect(result).to.equal(inputs.large.hash.toString('hex'));
   });
 
   describe('input encoding', () => {
     it('hashes a uint8array', async () => {
       const contents = [...new Uint8Array(Buffer.from(inputs.hello.input))];
       const result = await page.evaluate(
-        `blake3.hash(new Uint8Array([${contents.join(',')}]), { encoding: "hex" })`,
+        `blake3.hash(new Uint8Array([${contents.join(',')}])).toString("hex")`,
       );
-      expect(result).to.equal(inputs.hello.hash);
+      expect(result).to.equal(inputs.hello.hash.toString('hex'));
     });
 
     it('hashes a string', async () => {
-      const result = await page.evaluate('blake3.hash(inputs.large.input, { encoding: "hex" })');
-      expect(result).to.equal(inputs.large.hash);
+      const result = await page.evaluate('blake3.hash(inputs.large.input).toString("hex")');
+      expect(result).to.equal(inputs.large.hash.toString('hex'));
     });
 
     it('customizes output length', async () => {
       const result = await page.evaluate(
-        'blake3.hash(inputs.hello.input, { encoding: "hex", length: 16 })',
+        'blake3.hash(inputs.hello.input, { length: 16 }).toString("hex")',
       );
-      expect(result).to.equal(inputs.hello.hash.slice(0, 32));
+      expect(result).to.equal(inputs.hello.hash.slice(0, 16).toString('hex'));
     });
   });
 
   describe('output encoding', () => {
     const tcases = [
-      { encoding: 'hex', expected: inputs.hello.hash },
-      { encoding: 'base64', expected: Buffer.from(inputs.hello.hash, 'hex').toString('base64') },
-      { encoding: 'utf8', expected: Buffer.from(inputs.hello.hash, 'hex').toString('utf8') },
+      { encoding: 'hex', expected: inputs.hello.hash.toString('hex') },
+      { encoding: 'base64', expected: inputs.hello.hash.toString('base64') },
+      { encoding: 'utf8', expected: inputs.hello.hash.toString('utf8') },
     ];
 
     tcases.forEach(({ encoding, expected }) =>
       it(encoding, async () => {
         const result = await page.evaluate(
-          `blake3.hash(inputs.hello.input, { encoding: "${encoding}" })`,
+          `blake3.hash(inputs.hello.input).toString("${encoding}")`,
         );
         expect(result).to.deep.equal(expected);
       }),
@@ -131,7 +134,7 @@ describe('browser', () => {
       for (let i = 0; i < actual.length; i++) {
         actual[i] = result[i]; // it comes as a plain object, we need to convert it to a buffer
       }
-      expect(actual).to.deep.equal(Buffer.from(inputs.hello.hash, 'hex'));
+      expect(actual).to.deep.equal(inputs.hello.hash);
     });
   });
 
@@ -145,7 +148,7 @@ describe('browser', () => {
         return hash.digest('hex');
       })()`);
 
-      expect(result).to.equal(inputs.hello.hash);
+      expect(result).to.equal(inputs.hello.hash.toString('hex'));
     });
 
     it('customizes the output length', async () => {
@@ -155,7 +158,40 @@ describe('browser', () => {
         return hash.digest('hex', { length: 16 });
       })()`);
 
-      expect(result).to.equal(inputs.hello.hash.slice(0, 32));
+      expect(result).to.equal(inputs.hello.hash.slice(0, 16).toString('hex'));
+    });
+
+    it('returns a hash instance from digest', async () => {
+      const result = await page.evaluate(`(() => {
+        const hash = blake3.createHash();
+        ${[...Buffer.from(inputs.hello.input)]
+          .map(byte => `hash.update(new Uint8Array([${byte}]));`)
+          .join('\n')}
+        return hash.digest('hex');
+      })()`);
+
+      expect(result).to.equal(inputs.hello.hash.toString('hex'));
+    });
+  });
+
+  describe('reader', () => {
+    it('is sane with a Hash', async () => {
+      const result = await page.evaluate(`(() => {
+        const hash = blake3.createHash();
+        hash.update("hello");
+
+        return blake3.using(hash.reader(), reader => [
+          reader.read(48).toString('hex'),
+          reader.toArray().toString('hex'),
+          reader.toString('hex'),
+        ]);
+      })()`);
+
+      expect(result).to.deep.equal([
+        hello48.toString('hex'),
+        inputs.hello.hash.toString('hex'),
+        inputs.hello.hash.toString('hex'),
+      ]);
     });
   });
 

@@ -3,6 +3,7 @@ import { BaseHash, IHasher, IInternalHash } from '../base';
 import { Transform, TransformCallback } from 'stream';
 import { IBaseHashOptions } from '../base/hash-fn';
 import { getWasm } from './wasm';
+import { NodeHashReader } from './hash-reader';
 
 export interface INodeHash extends IHasher<Buffer> {
   /**
@@ -31,12 +32,20 @@ export interface INodeHash extends IHasher<Buffer> {
 /**
  * @inheritdoc
  */
-export class NodeHash extends Transform implements IHasher<Buffer> {
-  private readonly hash: BaseHash<Buffer>;
+export class NodeHash<Reader> extends Transform implements IHasher<Buffer> {
+  private readonly hash: BaseHash<Buffer, Reader, NodeHashReader>;
 
-  constructor(implementation: IInternalHash) {
+  constructor(implementation: IInternalHash<Reader>, getReader: (r: Reader) => NodeHashReader) {
     super();
-    this.hash = new BaseHash(implementation, l => Buffer.alloc(l));
+    this.hash = new BaseHash(implementation, l => Buffer.alloc(l), getReader);
+  }
+
+  /**
+   * @reader
+   */
+  public reader(options?: { dispose?: boolean }) {
+    const reader = this.hash.reader(options);
+    return reader;
   }
 
   /**
@@ -99,4 +108,4 @@ export class NodeHash extends Transform implements IHasher<Buffer> {
 /**
  * A Node.js crypto-like createHash method.
  */
-export const createHash = () => new NodeHash(getWasm().create_hasher());
+export const createHash = () => new NodeHash(getWasm().create_hasher(), r => new NodeHashReader(r));
