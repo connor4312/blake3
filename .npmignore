@@ -1,6 +1,6 @@
 /*
 !/dist
-!/pkg
+!/esm
 !/*.ts
 !/*.js
 !/targets.json

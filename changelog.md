@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1 - 2019-01-23
+
+- fix browser bundle to use pure es modules (fixes [#8](https://github.com/connor4312/blake3/issues/8))
+
 ## 2.0.0 - 2019-01-19
 
 - **breaking** the simple `hash` function no longer takes an encoding in its second parameter. Use `hash(data).toString(<encoding>)` instead.

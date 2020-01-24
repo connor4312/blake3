@@ -6,7 +6,7 @@ RUST_WASM_OUT = $(patsubst %, dist/wasm/%/blake3_js_bg.wasm, $(TARGETS))
 RUST_NATIVE_SRC = $(wildcard rs/native/src/*.rs)
 RUST_NATIVE_OUT = dist/native.node
 TS_SRC = $(wildcard ts/*.ts)
-TS_OUT = pkg/index.js
+TS_OUT = dist/index.js esm/index.js
 
 all: $(RUST_WASM_OUT) $(RUST_NATIVE_OUT) $(TS_OUT)
 
@@ -34,6 +34,7 @@ endif
 
 $(TS_OUT): $(TS_SRC) $(RUST_WASM_OUT)
 	./node_modules/.bin/tsc
+	./node_modules/.bin/tsc -p tsconfig.esm.json
 
 $(RUST_WASM_OUT): $(RUST_WASM_SRC)
 	wasm-pack build rs/wasm --$(MODE) -t $(word 3, $(subst /, ,$@)) -d ../../$(dir $@)
@@ -43,7 +44,7 @@ ifeq ($(MODE), release)
 endif
 
 clean:
-	rm -rf pkg dist
+	rm -rf esm dist
 
 prepare-binaries: $(TS_OUT)
 	git checkout generate-binary
