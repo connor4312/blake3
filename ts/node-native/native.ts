@@ -7,7 +7,7 @@ export interface INativeReader {
 }
 
 export interface INativeHash extends IInternalHash<INativeReader> {
-  new (): INativeHash;
+  new (hashKey?: Buffer, context?: string): INativeHash;
 }
 
 export interface INativeModule {

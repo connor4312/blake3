@@ -31,9 +31,31 @@ pub struct Blake3Hash {
 
 declare_types! {
     pub class JsHash for Blake3Hash {
-        init(_) {
+        // Constructing is awkward in neon, so this is how this works:
+        // 0 args = new regular hash
+        // 1 args = use the first arg (a Buffer) as the key
+        // 2 args = use the second arg (a String) to derive a key
+        init(mut cx) {
+            let hasher = match cx.len() {
+                0 => blake3::Hasher::new(),
+                1 => {
+                    let key_buffer = cx.argument::<JsBuffer>(0)?;
+                    let key_bytes = cx.borrow(&key_buffer, |data| {
+                        let mut key = [0; 32];
+                        key.copy_from_slice(data.as_slice::<u8>());
+                        key
+                    });
+                    blake3::Hasher::new_keyed(&key_bytes)
+                },
+                2 => {
+                    let context_data = cx.argument::<JsString>(1)?;
+                    blake3::Hasher::new_derive_key(&context_data.value())
+                },
+                _ => panic!("unexpected number of arguments"),
+            };
+
             Ok(Blake3Hash {
-                hasher: blake3::Hasher::new(),
+                hasher: hasher,
             })
         }
 

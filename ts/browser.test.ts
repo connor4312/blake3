@@ -5,7 +5,7 @@ import handler from 'serve-handler';
 import puppeteer from 'puppeteer';
 import { Server, createServer } from 'http';
 import { AddressInfo } from 'net';
-import { inputs, hello48 } from './base/test-helpers';
+import { inputs, hello48, ogTestVectors } from './base/test-helpers';
 import { tmpdir } from 'os';
 import { expect } from 'chai';
 
@@ -121,7 +121,7 @@ describe('browser', () => {
         const result = await page.evaluate(
           `blake3.hash(inputs.hello.input).toString("${encoding}")`,
         );
-        expect(result).to.deep.equal(expected);
+        expect(result).to.equal(expected);
       }),
     );
 
@@ -193,6 +193,53 @@ describe('browser', () => {
         inputs.hello.hash.toString('hex'),
       ]);
     });
+  });
+
+  describe('original test vectors', () => {
+    for (const {
+      inputLen,
+      expectedDerive,
+      expectedHash,
+      expectedKeyed,
+    } of ogTestVectors.cases.slice(0, 6)) {
+      describe(`${inputLen}`, async () => {
+        const input = Buffer.alloc(inputLen);
+        for (let i = 0; i < inputLen; i++) {
+          input[i] = i % 251;
+        }
+
+        const inputStr = `new Uint8Array([${input.join(',')}])`;
+
+        it('hash()', async () => {
+          const result = await page.evaluate(`blake3.hash(
+            ${inputStr},
+            { length: ${expectedHash.length / 2} }
+          ).toString("hex")`);
+
+          expect(result).to.equal(expectedHash);
+        });
+
+        it('deriveKey()', async () => {
+          const result = await page.evaluate(`blake3.deriveKey(
+            ${JSON.stringify(ogTestVectors.context)},
+            ${inputStr},
+            { length: ${expectedHash.length / 2} }
+          ).toString("hex")`);
+
+          expect(result).to.equal(expectedDerive);
+        });
+
+        it('keyedHash()', async () => {
+          const result = await page.evaluate(`blake3.keyedHash(
+            new Uint8Array([${Buffer.from(ogTestVectors.key).join(',')}]),
+            ${inputStr},
+            { length: ${expectedHash.length / 2} }
+          ).toString("hex")`);
+
+          expect(result).to.equal(expectedKeyed);
+        });
+      });
+    }
   });
 
   after(() => {

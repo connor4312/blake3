@@ -1,11 +1,18 @@
 import * as wasm from './node';
 import * as native from './node-native';
 import { expect } from 'chai';
-import { inputs, hello48 } from './base/test-helpers';
+import { inputs, hello48, ogTestVectors } from './base/test-helpers';
 import { ReadableStreamBuffer } from 'stream-buffers';
 import { maxHashBytes } from './base/hash-reader';
 
-function suite({ hash, createHash }: typeof wasm | typeof native) {
+function suite({
+  hash,
+  createHash,
+  keyedHash,
+  deriveKey,
+  createDeriveKey,
+  createKeyed,
+}: typeof wasm | typeof native) {
   describe('encoding', () => {
     it('hashes a buffer', () => {
       expect(hash(Buffer.from(inputs.hello.input))).to.deep.equal(inputs.hello.hash);
@@ -182,6 +189,65 @@ function suite({ hash, createHash }: typeof wasm | typeof native) {
       reader.position = maxHashBytes - BigInt(1);
       expect(() => reader.read(2)).to.throw(RangeError);
     });
+  });
+
+  describe('original test vectors', () => {
+    for (const { inputLen, expectedDerive, expectedKeyed, expectedHash } of ogTestVectors.cases) {
+      describe(`${inputLen}`, async () => {
+        const input = Buffer.alloc(inputLen);
+        for (let i = 0; i < inputLen; i++) {
+          input[i] = i % 251;
+        }
+
+        it('hash()', () => {
+          expect(hash(input, { length: expectedHash.length / 2 }).toString('hex')).to.equal(
+            expectedHash,
+          );
+        });
+
+        it('deriveKey()', () => {
+          expect(
+            deriveKey(ogTestVectors.context, input, { length: expectedDerive.length / 2 }).toString(
+              'hex',
+            ),
+          ).to.equal(expectedDerive);
+        });
+
+        it('createDeriveKey()', callback => {
+          const buffer = new ReadableStreamBuffer();
+          buffer.put(Buffer.from(input));
+          buffer.stop();
+          const hash = createDeriveKey(ogTestVectors.context);
+          buffer.on('data', b => hash.update(b));
+          buffer.on('end', () => {
+            const actual = hash.digest({ length: expectedDerive.length / 2 }).toString('hex');
+            expect(actual).to.equal(expectedDerive);
+            callback();
+          });
+        });
+
+        it('keyedHash()', () => {
+          expect(
+            keyedHash(Buffer.from(ogTestVectors.key), input, {
+              length: expectedKeyed.length / 2,
+            }).toString('hex'),
+          ).to.equal(expectedKeyed);
+        });
+
+        it('createKeyed()', callback => {
+          const buffer = new ReadableStreamBuffer();
+          buffer.put(Buffer.from(input));
+          buffer.stop();
+          const hash = createKeyed(Buffer.from(ogTestVectors.key));
+          buffer.on('data', b => hash.update(b));
+          buffer.on('end', () => {
+            const actual = hash.digest({ length: expectedDerive.length / 2 }).toString('hex');
+            expect(actual).to.equal(expectedKeyed);
+            callback();
+          });
+        });
+      });
+    }
   });
 }
 

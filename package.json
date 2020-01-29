@@ -18,7 +18,7 @@
     "prepack": "make clean && make MODE=release && npm test && rimraf dist/native.node",
     "test": "mocha --require source-map-support/register --recursive \"dist/**/*.test.js\" --timeout 5000",
     "fmt": "make fmt",
-    "compile": "tsc",
+    "compile": "tsc && tsc -p tsconfig.esm.json",
     "watch": "tsc --watch"
   },
   "repository": {

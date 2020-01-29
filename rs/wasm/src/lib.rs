@@ -9,11 +9,6 @@ pub fn hash(data: &[u8], out: &mut [u8]) {
 }
 
 #[wasm_bindgen]
-pub fn derive_key(context: String, key_material: &[u8], out: &mut [u8]) {
-    blake3::derive_key(&context, key_material, out)
-}
-
-#[wasm_bindgen]
 pub fn create_hasher() -> Blake3Hash {
     Blake3Hash {
         hasher: blake3::Hasher::new(),
@@ -31,9 +26,9 @@ pub fn create_keyed(key_slice: &[u8]) -> Blake3Hash {
 }
 
 #[wasm_bindgen]
-pub fn create_derived(key: String) -> Blake3Hash {
+pub fn create_derive(context: String) -> Blake3Hash {
     Blake3Hash {
-        hasher: blake3::Hasher::new_derive_key(&key),
+        hasher: blake3::Hasher::new_derive_key(&context),
     }
 }
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0 - 2019-01-23
+
+- add keyed hash and key derivation support (fixes [#2](https://github.com/connor4312/blake3/issues/2), [#9](https://github.com/connor4312/blake3/issues/9))
+- fixed a bug in hex encoding in the browser
+
 ## 2.0.1 - 2019-01-23
 
 - fix browser bundle to use pure es modules (fixes [#8](https://github.com/connor4312/blake3/issues/8))

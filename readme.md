@@ -10,7 +10,11 @@
 - [API](#api)
   - [Node.js](#nodejs)
     - [`hash(data: BinaryLike, options?: { length: number }): Buffer`](#hashdata-binarylike-options--length-number--buffer)
+    - [`keyedHash(key: Buffer, data: BinaryLike, options?: { length: number }): Buffer`](#keyedhashkey-buffer-data-binarylike-options--length-number--buffer)
+    - [`deriveKey(context: string, material: BinaryLike, options?: { length: number }): Buffer`](#derivekeycontext-string-material-binarylike-options--length-number--buffer)
     - [`createHash(): Hasher`](#createhash-hasher)
+    - [`createKeyed(key: Buffer): Hasher`](#createkeyedkey-buffer-hasher)
+    - [`createDeriveKey(key: Buffer): Hasher`](#createderivekeykey-buffer-hasher)
       - [`hasher.update(data: BinaryLike): this`](#hasherupdatedata-binarylike-this)
       - [`hasher.digest(encoding?: string, options?: { length: number, dispose: boolean })): Buffer | string`](#hasherdigestencoding-string-options--length-number-dispose-boolean--buffer--string)
       - [`hasher.reader(options?: { dispose: boolean }): HashReader`](#hasherreaderoptions--dispose-boolean--hashreader)
@@ -20,15 +24,19 @@
       - [`reader.readInto(target: Buffer): void`](#readerreadintotarget-buffer-void)
       - [`reader.read(bytes: number): Buffer`](#readerreadbytes-number-buffer)
       - [`reader.toString([encoding]): string`](#readertostringencoding-string)
-      - [`reade.toBuffer(): Buffer`](#readetobuffer-buffer)
+      - [`reader.toBuffer(): Buffer`](#readertobuffer-buffer)
       - [`reader.dispose()`](#readerdispose)
     - [`using(disposable: IDisposable, fn: disposable => T): T`](#usingdisposable-idisposable-fn-disposable--t-t)
   - [Browser](#browser)
     - [`hash(data: BinaryLike, options?: { length: number }): Hash`](#hashdata-binarylike-options--length-number--hash)
+    - [`keyedHash(key: Buffer, data: BinaryLike, options?: { length: number }): Hash`](#keyedhashkey-buffer-data-binarylike-options--length-number--hash)
+    - [`deriveKey(context: string, material: BinaryLike, options?: { length: number }): Hash`](#derivekeycontext-string-material-binarylike-options--length-number--hash)
     - [`Hash`](#hash)
       - [`hash.equals(other: Uint8Array)`](#hashequalsother-uint8array)
       - [`hash.toString(encoding: 'hex' | 'base64' | 'utf8'): string`](#hashtostringencoding-hex--base64--utf8-string)
     - [`createHash(): Hasher`](#createhash-hasher-1)
+    - [`createKeyed(key: Buffer): Hasher`](#createkeyedkey-buffer-hasher-1)
+    - [`createDeriveKey(key: Buffer): Hasher`](#createderivekeykey-buffer-hasher-1)
       - [`hasher.update(data: BinaryLike): this`](#hasherupdatedata-binarylike-this-1)
       - [`hasher.digest(encoding?: 'hex' | 'base64' | 'utf8', options?: { length: number, dispose: boolean })): Hash | string`](#hasherdigestencoding-hex--base64--utf8-options--length-number-dispose-boolean--hash--string)
       - [`hasher.reader(options?: { dispose: boolean }): HashReader`](#hasherreaderoptions--dispose-boolean--hashreader-1)
@@ -98,6 +106,18 @@ The Node API can be imported via `require('blake3')`.
 
 Returns a hash for the given data. The data can be a string, buffer, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a Buffer.
 
+#### `keyedHash(key: Buffer, data: BinaryLike, options?: { length: number }): Buffer`
+
+Returns keyed a hash for the given data. The key must be exactly 32 bytes. The data can be a string, buffer, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a Buffer.
+
+For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
+
+#### `deriveKey(context: string, material: BinaryLike, options?: { length: number }): Buffer`
+
+The key derivation function. The data can be a string, buffer, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a Buffer.
+
+For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.derive_key.html).
+
 #### `createHash(): Hasher`
 
 Creates a new hasher instance. In Node.js, this is also a transform stream.
@@ -107,6 +127,14 @@ createReadStream('file.txt')
   .pipe(createHash())
   .on('data', hash => console.log(hash.toString('hex')));
 ```
+
+#### `createKeyed(key: Buffer): Hasher`
+
+Creates a new hasher instance for a keyed hash. For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
+
+#### `createDeriveKey(key: Buffer): Hasher`
+
+Creates a new hasher instance for the key derivation function. For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.derive_key.html).
 
 ##### `hasher.update(data: BinaryLike): this`
 
@@ -152,7 +180,7 @@ Reads and returns the given number of bytes from the reader, and advances the po
 
 Converts first 32 bytes of the hash to a string with the given encoding. Defaults to hex encoding.
 
-##### `reade.toBuffer(): Buffer`
+##### `reader.toBuffer(): Buffer`
 
 Converts first 32 bytes of the hash to a Buffer.
 
@@ -182,7 +210,19 @@ The browser API can be imported via `import('blake3/browser')`.
 
 #### `hash(data: BinaryLike, options?: { length: number }): Hash`
 
-Returns a hash for the given data. The data can be a string, buffer, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a [Hash](#Hash) instance.
+Returns a hash for the given data. The data can be a string, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a [Hash](#Hash) instance.
+
+#### `keyedHash(key: Buffer, data: BinaryLike, options?: { length: number }): Hash`
+
+Returns keyed a hash for the given data. The key must be exactly 32 bytes. The data can be a string, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a [Hash](#Hash) instance.
+
+For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
+
+#### `deriveKey(context: string, material: BinaryLike, options?: { length: number }): Hash`
+
+The key derivation function. The data can be a string, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a [Hash](#Hash) instance.
+
+For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.derive_key.html).
 
 #### `Hash`
 
@@ -198,7 +238,15 @@ Converts the hash to a string with the given encoding.
 
 #### `createHash(): Hasher`
 
-Creates a new hasher instance:
+Creates a new hasher instance.
+
+#### `createKeyed(key: Buffer): Hasher`
+
+Creates a new hasher instance for a keyed hash. For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
+
+#### `createDeriveKey(key: Buffer): Hasher`
+
+Creates a new hasher instance for the key derivation function. For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.derive_key.html).
 
 ##### `hasher.update(data: BinaryLike): this`
 

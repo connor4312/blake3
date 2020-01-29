@@ -11,7 +11,7 @@ const encoders: { [K in BrowserEncoding]: (data: Uint8Array) => string } = {
   hex: data => {
     let out = '';
     for (const byte of data) {
-      if (byte <= 0x10) {
+      if (byte < 0x10) {
         out += '0';
       }
 
