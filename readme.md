@@ -12,9 +12,10 @@
     - [`hash(data: BinaryLike, options?: { length: number }): Buffer`](#hashdata-binarylike-options--length-number--buffer)
     - [`keyedHash(key: Buffer, data: BinaryLike, options?: { length: number }): Buffer`](#keyedhashkey-buffer-data-binarylike-options--length-number--buffer)
     - [`deriveKey(context: string, material: BinaryLike, options?: { length: number }): Buffer`](#derivekeycontext-string-material-binarylike-options--length-number--buffer)
-    - [`createHash(): Hasher`](#createhash-hasher)
-    - [`createKeyed(key: Buffer): Hasher`](#createkeyedkey-buffer-hasher)
-    - [`createDeriveKey(key: Buffer): Hasher`](#createderivekeykey-buffer-hasher)
+    - [Hasher](#hasher)
+      - [`createHash(): Hasher`](#createhash-hasher)
+      - [`createKeyed(key: Buffer): Hasher`](#createkeyedkey-buffer-hasher)
+      - [`createDeriveKey(key: Buffer): Hasher`](#createderivekeykey-buffer-hasher)
       - [`hasher.update(data: BinaryLike): this`](#hasherupdatedata-binarylike-this)
       - [`hasher.digest(encoding?: string, options?: { length: number, dispose: boolean })): Buffer | string`](#hasherdigestencoding-string-options--length-number-dispose-boolean--buffer--string)
       - [`hasher.reader(options?: { dispose: boolean }): HashReader`](#hasherreaderoptions--dispose-boolean--hashreader)
@@ -34,9 +35,10 @@
     - [`Hash`](#hash)
       - [`hash.equals(other: Uint8Array)`](#hashequalsother-uint8array)
       - [`hash.toString(encoding: 'hex' | 'base64' | 'utf8'): string`](#hashtostringencoding-hex--base64--utf8-string)
-    - [`createHash(): Hasher`](#createhash-hasher-1)
-    - [`createKeyed(key: Buffer): Hasher`](#createkeyedkey-buffer-hasher-1)
-    - [`createDeriveKey(key: Buffer): Hasher`](#createderivekeykey-buffer-hasher-1)
+    - [Hasher](#hasher-1)
+      - [`createHash(): Hasher`](#createhash-hasher-1)
+      - [`createKeyed(key: Buffer): Hasher`](#createkeyedkey-buffer-hasher-1)
+      - [`createDeriveKey(key: Buffer): Hasher`](#createderivekeykey-buffer-hasher-1)
       - [`hasher.update(data: BinaryLike): this`](#hasherupdatedata-binarylike-this-1)
       - [`hasher.digest(encoding?: 'hex' | 'base64' | 'utf8', options?: { length: number, dispose: boolean })): Hash | string`](#hasherdigestencoding-hex--base64--utf8-options--length-number-dispose-boolean--hash--string)
       - [`hasher.reader(options?: { dispose: boolean }): HashReader`](#hasherreaderoptions--dispose-boolean--hashreader-1)
@@ -118,9 +120,9 @@ The key derivation function. The data can be a string, buffer, typedarray, array
 
 For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.derive_key.html).
 
-#### `createHash(): Hasher`
+#### Hasher
 
-Creates a new hasher instance. In Node.js, this is also a transform stream.
+The hasher is a type that lets you incrementally build a hash. It's compatible with Node's crypto hash instance. For instance, it implements a transform stream, so you could do something like:
 
 ```js
 createReadStream('file.txt')
@@ -128,11 +130,15 @@ createReadStream('file.txt')
   .on('data', hash => console.log(hash.toString('hex')));
 ```
 
-#### `createKeyed(key: Buffer): Hasher`
+##### `createHash(): Hasher`
+
+Creates a new hasher instance using the standard hash function.
+
+##### `createKeyed(key: Buffer): Hasher`
 
 Creates a new hasher instance for a keyed hash. For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
 
-#### `createDeriveKey(key: Buffer): Hasher`
+##### `createDeriveKey(key: Buffer): Hasher`
 
 Creates a new hasher instance for the key derivation function. For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.derive_key.html).
 
@@ -234,17 +240,40 @@ Returns whether this hash equals the other hash, via a constant-time equality ch
 
 ##### `hash.toString(encoding: 'hex' | 'base64' | 'utf8'): string`
 
+#### Hasher
+
+The hasher is a type that lets you incrementally build a hash. For instance, you can hash a `fetch`ed page like:
+
+```js
+const res = await fetch('https://example.com');
+const body = await res.body;
+
+const hasher = blake3.createHash();
+const reader = body.getReader();
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) {
+    break;
+  }
+
+  hasher.update(value);
+}
+
+console.log('Hash of', res.url, 'is', hasher.digest('hex'));
+```
+
 Converts the hash to a string with the given encoding.
 
-#### `createHash(): Hasher`
+##### `createHash(): Hasher`
 
-Creates a new hasher instance.
+Creates a new hasher instance using the standard hash function.
 
-#### `createKeyed(key: Buffer): Hasher`
+##### `createKeyed(key: Buffer): Hasher`
 
 Creates a new hasher instance for a keyed hash. For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
 
-#### `createDeriveKey(key: Buffer): Hasher`
+##### `createDeriveKey(key: Buffer): Hasher`
 
 Creates a new hasher instance for the key derivation function. For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.derive_key.html).
 
