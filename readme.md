@@ -212,7 +212,17 @@ using(hash.reader(), async reader => {
 
 ### Browser
 
-The browser API can be imported via `import('blake3/browser')`.
+The browser API can be imported via `import('blake3/browser')`, which works well with Webpack.
+
+If you aren't using a bundler or using a more "pure" bundler like Parcel, you can import `blake3/browser-async` which exports a function to asynchronously load the WebAssembly code and resolves to the package contents.
+
+```js
+import load from 'blake3/browser-async';
+
+load().then(blake3 => {
+  console.log(blake3.hash('hello world'));
+});
+```
 
 #### `hash(data: BinaryLike, options?: { length: number }): Hash`
 

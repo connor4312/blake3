@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.1 - 2019-02-11
+
+- allow importing the module without a bundler or with tools like Parcel
+
 ## 2.1.0 - 2019-01-23
 
 - add keyed hash and key derivation support (fixes [#2](https://github.com/connor4312/blake3/issues/2), [#9](https://github.com/connor4312/blake3/issues/9))

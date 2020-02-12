@@ -1,10 +1,6 @@
 import { BaseHashInput, IBaseHashOptions, inputToArray, defaultHashLength } from '../base/hash-fn';
-import {
-  hash as rawHash,
-  create_derive as createDerive,
-  create_keyed as createKeyed,
-} from '../../dist/wasm/browser/blake3_js';
 import { Hash } from './hash';
+import { getWasm } from './wasm';
 
 /**
  * Input used for browser-based hashes.
@@ -27,7 +23,7 @@ export function hash(
   { length = defaultHashLength }: IBaseHashOptions = {},
 ): Hash {
   const result = new Hash(length);
-  rawHash(normalizeInput(input), result);
+  getWasm().hash(normalizeInput(input), result);
   return result;
 }
 
@@ -41,7 +37,7 @@ export function deriveKey(
   material: HashInput,
   { length = defaultHashLength }: IBaseHashOptions = {},
 ) {
-  const derive = createDerive(context);
+  const derive = getWasm().create_derive(context);
   derive.update(normalizeInput(material));
   const result = new Hash(length);
   derive.digest(result);
@@ -60,7 +56,7 @@ export function keyedHash(
     throw new Error(`key provided to keyedHash must be 32 bytes, got ${key.length}`);
   }
 
-  const derive = createKeyed(key);
+  const derive = getWasm().create_keyed(key);
   derive.update(normalizeInput(input));
   const result = new Hash(length);
   derive.digest(result);

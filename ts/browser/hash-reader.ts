@@ -1,7 +1,7 @@
 import { BaseHashReader } from '../base/hash-reader';
 import { BrowserEncoding } from './encoding';
 import { Hash } from './hash';
-import { defaultHashLength } from '../base';
+import { defaultHashLength } from '../base/index';
 
 /**
  * A hash reader for WebAssembly targets.

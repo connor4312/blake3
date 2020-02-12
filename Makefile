@@ -1,4 +1,4 @@
-TARGETS=nodejs browser
+TARGETS=nodejs browser web
 MODE=dev
 
 RUST_WASM_SRC = $(wildcard rs/wasm/src/*.rs)

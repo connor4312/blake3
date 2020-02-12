@@ -1,5 +1,5 @@
 import { normalizeInput, HashInput } from './hash-fn';
-import { BaseHash, IHasher, IInternalHash, IHasherDigestOptions } from '../base';
+import { BaseHash, IHasher, IInternalHash, IHasherDigestOptions } from '../base/index';
 import { Transform, TransformCallback } from 'stream';
 import { IBaseHashOptions } from '../base/hash-fn';
 import { getWasm } from './wasm';

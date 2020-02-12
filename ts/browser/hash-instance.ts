@@ -1,11 +1,11 @@
-import { BaseHash as BaseHasher } from '../base';
+import { BaseHash as BaseHasher } from '../base/index';
 import { normalizeInput, HashInput } from './hash-fn';
 import { BrowserEncoding, mustGetEncoder } from './encoding';
-import { create_hasher } from '../../dist/wasm/browser/blake3_js';
 import { IBaseHashOptions } from '../base/hash-fn';
 import { BrowserHashReader } from './hash-reader';
 import { IInternalReader } from '../base/hash-reader';
 import { Hash } from './hash';
+import { getWasm } from './wasm';
 
 /**
  * @inheritdoc
@@ -49,7 +49,7 @@ export class BrowserHasher extends BaseHasher<Hash, IInternalReader, BrowserHash
  */
 export const createHash = () =>
   new BrowserHasher(
-    create_hasher(),
+    getWasm().create_hasher(),
     l => new Hash(l),
     r => new BrowserHashReader(r),
   );

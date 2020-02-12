@@ -1,4 +1,4 @@
-import { IInternalHash } from '../base';
+import { IInternalHash } from '../base/index';
 
 export interface INativeReader {
   free?(): void;
