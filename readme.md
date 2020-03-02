@@ -84,7 +84,7 @@ hash('some string'); // => hash a string to a uint8array
 
 // Update incrementally (Node and Browsers):
 const hash = createHash();
-stream.on('data', d => hash.update(hash));
+stream.on('data', d => hash.update(d));
 stream.on('error', err => {
   // hashes use unmanaged memory in WebAssembly, always free them if you don't digest()!
   hash.dispose();
