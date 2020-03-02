@@ -9,7 +9,6 @@
     "webassembly",
     "wasm"
   ],
-  "sideEffects": false,
   "module": "./esm/index",
   "browser": "./esm/browser/index",
   "main": "./dist/index",
