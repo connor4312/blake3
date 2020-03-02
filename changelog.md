@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.2 - 2019-03-01
+
+- fix missing createKeyed function in browsers
+
 ## 2.1.1 - 2019-02-11
 
 - allow importing the module without a bundler or with tools like Parcel
