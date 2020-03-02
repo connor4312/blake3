@@ -53,3 +53,13 @@ export const createHash = () =>
     l => new Hash(l),
     r => new BrowserHashReader(r),
   );
+
+/**
+ * A Node.js crypto-like createHash method.
+ */
+export const createKeyed = (key: Uint8Array) =>
+  new BrowserHasher(
+    getWasm().create_keyed(key),
+    l => new Hash(l),
+    r => new BrowserHashReader(r),
+  );

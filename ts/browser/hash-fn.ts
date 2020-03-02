@@ -48,7 +48,7 @@ export function deriveKey(
  * The keyed hash function. See {@link https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html}.
  */
 export function keyedHash(
-  key: Buffer,
+  key: Uint8Array,
   input: HashInput,
   { length = defaultHashLength }: IBaseHashOptions = {},
 ) {

@@ -279,6 +279,18 @@ function runTests(opts: { page: Page }) {
           expect(result).to.equal(expectedDerive);
         });
 
+        it('createKeyed()', async () => {
+          const result = await opts.page.evaluate(`(() => {
+            const hasher = blake3.createKeyed(new Uint8Array([${Buffer.from(ogTestVectors.key).join(
+              ',',
+            )}]));
+            hasher.update(${inputStr});
+            return hasher.digest({ length: ${expectedHash.length / 2} }).toString('hex');
+          })()`);
+
+          expect(result).to.equal(expectedKeyed);
+        });
+
         it('keyedHash()', async () => {
           const result = await opts.page.evaluate(`blake3.keyedHash(
             new Uint8Array([${Buffer.from(ogTestVectors.key).join(',')}]),
