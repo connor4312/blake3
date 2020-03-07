@@ -89,4 +89,7 @@ function useNativeImport() {
   writeFileSync(indexFile, contents.replace('"./node"', '"./node-native"'));
 }
 
-install().catch(fallback);
+install().catch(err => {
+  console.error(`There was an uncaught error installing native bindings: ${err.stack}`);
+  fallback();
+});
