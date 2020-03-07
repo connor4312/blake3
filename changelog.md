@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.3 - 2019-03-06
+
+- update to BLAKE3@0.2, providing significant speed improvements for native Node
+- fixed missing file causing installation of native Node extensions to fail
+
 ## 2.1.2 - 2019-03-01
 
 - fix missing createKeyed function in browsers
