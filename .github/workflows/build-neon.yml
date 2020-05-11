@@ -22,14 +22,25 @@ jobs:
           toolchain: nightly
       - uses: actions/setup-node@v1
         with:
-          node-version: v13.10.1
+          node-version: v14.2.0
       - run: npm install neon-cli rimraf
+      - run: ../node_modules/.bin/neon build --release
+        working-directory: rs
+      - run: 'mv rs/native/index.node dist/${{ matrix.os }}-83.node'
+      - uses: actions/setup-node@v1
+        with:
+          node-version: v13.14.0
+      - shell: powershell
+        name: patch node-gyp for VS 2019
+        run: "npm install --global node-gyp@latest\r\nnpm prefix -g | % {npm config set node_gyp \"$_\\node_modules\\node-gyp\\bin\\node-gyp.js\"}"
+        if: matrix.os == 'windows-latest'
+      - run: ./node_modules/.bin/rimraf rs/native/target
       - run: ../node_modules/.bin/neon build --release
         working-directory: rs
       - run: 'mv rs/native/index.node dist/${{ matrix.os }}-79.node'
       - uses: actions/setup-node@v1
         with:
-          node-version: v12.16.1
+          node-version: v12.16.3
       - shell: powershell
         name: patch node-gyp for VS 2019
         run: "npm install --global node-gyp@latest\r\nnpm prefix -g | % {npm config set node_gyp \"$_\\node_modules\\node-gyp\\bin\\node-gyp.js\"}"
@@ -51,7 +62,7 @@ jobs:
       - run: 'mv rs/native/index.node dist/${{ matrix.os }}-67.node'
       - uses: actions/setup-node@v1
         with:
-          node-version: v10.19.0
+          node-version: v10.20.1
       - shell: powershell
         name: patch node-gyp for VS 2019
         run: "npm install --global node-gyp@latest\r\nnpm prefix -g | % {npm config set node_gyp \"$_\\node_modules\\node-gyp\\bin\\node-gyp.js\"}"
