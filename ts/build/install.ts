@@ -19,6 +19,7 @@ const { version } = require('../../package.json');
 const repoUrl = process.env.BLAKE3_REPO_URL || 'https://github.com/connor4312/blake3';
 const issueUrl = `${repoUrl}/issues/new`;
 const targets = require('../../targets.json');
+const bindingPath = join(__dirname, '..', 'native.node');
 
 async function install() {
   const majorVersion = getMajorVersion(process.version);
@@ -32,7 +33,7 @@ async function install() {
   let apiVersion = targets[process.version];
   if (!apiVersion) {
     console.error(
-      `API version for node ${process.platform} not explicitly built, falling back to latest. If this does not work, open an issue at ${issueUrl}`,
+      `API version for node@${process.version} ${process.platform} not explicitly built, falling back to latest. If this does not work, open an issue at ${issueUrl}`,
     );
     apiVersion = Object.values(targets)[0];
   }
@@ -47,6 +48,14 @@ async function install() {
     `Retrieving native BLAKE3 bindings for Node v${majorVersion} on ${process.platform}...`,
   );
   await download(`${repoUrl}/releases/download/v${version}/${platform}-${apiVersion}.node`);
+
+  try {
+    require(bindingPath);
+  } catch (e) {
+    console.log(`Error trying to import bindings: ${e.stack}`);
+    return fallback();
+  }
+
   useNativeImport();
   console.log('BLAKE3 bindings retrieved');
 }
@@ -74,9 +83,7 @@ async function download(url: string): Promise<boolean> {
         return;
       }
 
-      pipeline(res, createWriteStream(join(__dirname, '..', 'native.node')), err =>
-        err ? onError(err) : resolve(true),
-      );
+      pipeline(res, createWriteStream(bindingPath), err => (err ? onError(err) : resolve(true)));
     });
 
     req.on('error', onError);
