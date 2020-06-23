@@ -106,17 +106,17 @@ The Node API can be imported via `require('blake3')`.
 
 #### `hash(data: BinaryLike, options?: { length: number }): Buffer`
 
-Returns a hash for the given data. The data can be a string, buffer, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a Buffer.
+Returns a hash for the given data. The data can be a string, buffer, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a Buffer.
 
 #### `keyedHash(key: Buffer, data: BinaryLike, options?: { length: number }): Buffer`
 
-Returns keyed a hash for the given data. The key must be exactly 32 bytes. The data can be a string, buffer, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a Buffer.
+Returns keyed a hash for the given data. The key must be exactly 32 bytes. The data can be a string, buffer, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a Buffer.
 
 For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
 
 #### `deriveKey(context: string, material: BinaryLike, options?: { length: number }): Buffer`
 
-The key derivation function. The data can be a string, buffer, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a Buffer.
+The key derivation function. The data can be a string, buffer, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a Buffer.
 
 For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.derive_key.html).
 
@@ -226,17 +226,17 @@ load().then(blake3 => {
 
 #### `hash(data: BinaryLike, options?: { length: number }): Hash`
 
-Returns a hash for the given data. The data can be a string, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a [Hash](#Hash) instance.
+Returns a hash for the given data. The data can be a string, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a [Hash](#Hash) instance.
 
 #### `keyedHash(key: Buffer, data: BinaryLike, options?: { length: number }): Hash`
 
-Returns keyed a hash for the given data. The key must be exactly 32 bytes. The data can be a string, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a [Hash](#Hash) instance.
+Returns keyed a hash for the given data. The key must be exactly 32 bytes. The data can be a string, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a [Hash](#Hash) instance.
 
 For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
 
 #### `deriveKey(context: string, material: BinaryLike, options?: { length: number }): Hash`
 
-The key derivation function. The data can be a string, typedarray, array buffer, or array. By default, it creates a hash with the first 32 bytes of data, but this is configurable. It returns a [Hash](#Hash) instance.
+The key derivation function. The data can be a string, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a [Hash](#Hash) instance.
 
 For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.derive_key.html).
 
