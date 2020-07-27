@@ -11,5 +11,5 @@ crate-type = ["cdylib"]
 neon-build = "0.3.3"
 
 [dependencies]
-blake3 = { version = "0.2", features = ["c"] }
+blake3 = "0.3"
 neon = "0.3"
