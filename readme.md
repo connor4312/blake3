@@ -361,20 +361,23 @@ using(hash.reader(), async reader => {
 
 You can run benchmarks by installing `npm install -g @c4312/matcha`, then running `matcha benchmark.js`. These are the results running on Node 12 on my MacBook. Blake3 is significantly faster than Node's built-in hashing.
 
-      337,000 ops/sec > 64B#md5
-      302,000 ops/sec > 64B#sha1
-      276,000 ops/sec > 64B#sha256
-      752,000 ops/sec > 64B#blake3
+        276,000 ops/sec > 64B#md5 (4,240x)
+        263,000 ops/sec > 64B#sha1 (4,040x)
+        271,000 ops/sec > 64B#sha256 (4,160x)
+      1,040,000 ops/sec > 64B#blake3 wasm (15,900x)
+        625,000 ops/sec > 64B#blake3 native (9,590x)
 
-        11,700 ops/sec > 64KB#md5
-        16,100 ops/sec > 64KB#sha1
-         7,550 ops/sec > 64KB#sha256
-        52,800 ops/sec > 64KB#blake3
+          9,900 ops/sec > 64KB#md5 (152x)
+         13,900 ops/sec > 64KB#sha1 (214x)
+          6,470 ops/sec > 64KB#sha256 (99.2x)
+          6,410 ops/sec > 64KB#blake3 wasm (98.4x)
+         48,900 ops/sec > 64KB#blake3 native (750x)
 
-           124 ops/sec > 6MB#md5
-           175 ops/sec > 6MB#sha1
-          80.2 ops/sec > 6MB#sha256
-           518 ops/sec > 6MB#blake3
+            106 ops/sec > 6MB#md5 (1.63x)
+            150 ops/sec > 6MB#sha1 (2.3x)
+           69.2 ops/sec > 6MB#sha256 (1.06x)
+           65.2 ops/sec > 6MB#blake3 wasm (1x)
+            502 ops/sec > 6MB#blake3 native (7.7x)
 
 ## Contributing
 
