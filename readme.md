@@ -4,6 +4,10 @@
 
     npm install blake3
 
+Additionally, there's a flavor of the package which is identical except that it will not download native Node.js bindings and use only WebAssembly:
+
+    npm install blake3-wasm
+
 ## Table of Contents
 
 - [Quickstart](#quickstart)

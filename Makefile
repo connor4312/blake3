@@ -10,6 +10,13 @@ TS_OUT = dist/index.js esm/index.js
 
 all: $(RUST_WASM_OUT) $(RUST_NATIVE_OUT) $(TS_OUT)
 
+publish: $(RUST_WASM_OUT) $(RUST_NATIVE_OUT) $(TS_OUT)
+	npm publish --unsafe-perm
+	cp package.json .original.package.json
+	cat .original.package.json | jq -M 'del(.scripts.install) | .name = "blake3-wasm"' > package.json
+	npm publish --unsafe-perm
+	mv -f .original.package.json package.json
+
 prepare:
 	npm install
 
@@ -53,4 +60,4 @@ prepare-binaries: $(TS_OUT)
 	git push -u origin generate-binary -f
 	git checkout -
 
-.PHONY: all clean prepare fmt fmt-rs fmt-ts prepare-binaries
+.PHONY: all clean prepare fmt fmt-rs fmt-ts prepare-binaries publish

@@ -1,13 +1,13 @@
-import webpack from 'webpack';
-import { resolve } from 'path';
-import { writeFileSync, mkdirSync } from 'fs';
-import handler from 'serve-handler';
-import puppeteer, { Page } from 'puppeteer';
-import { Server, createServer } from 'http';
-import { AddressInfo } from 'net';
-import { inputs, hello48, ogTestVectors } from './base/test-helpers';
-import { tmpdir } from 'os';
 import { expect } from 'chai';
+import { mkdirSync, writeFileSync } from 'fs';
+import { createServer, Server } from 'http';
+import { AddressInfo } from 'net';
+import { tmpdir } from 'os';
+import { resolve } from 'path';
+import puppeteer, { Page } from 'puppeteer';
+import handler from 'serve-handler';
+import webpack from 'webpack';
+import { hello48, inputs, ogTestVectors } from './base/test-helpers';
 
 // Much of the browser code is also used in Node's wasm. We test things more
 // thoroughly there because tests are easier to write and debug, these tests
@@ -74,7 +74,10 @@ describe('browser', () => {
       this.timeout(20 * 1000);
 
       const { port } = server.address() as AddressInfo;
-      const browser = await puppeteer.launch();
+      const browser = await puppeteer.launch({
+        executablePath: 'google-chrome-stable',
+        args: ['--no-sandbox'],
+      });
       page = await browser.newPage();
       await page.goto(`http://localhost:${port}`);
       await page.waitForFunction('!!window.blake3');
@@ -108,7 +111,10 @@ describe('browser', () => {
       this.timeout(20 * 1000);
 
       const { port } = server.address() as AddressInfo;
-      const browser = await puppeteer.launch();
+      const browser = await puppeteer.launch({
+        executablePath: 'google-chrome-stable',
+        args: ['--no-sandbox'],
+      });
       page = await browser.newPage();
       page.on('console', console.log);
       page.on('pageerror', console.log);
