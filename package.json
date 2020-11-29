@@ -1,6 +1,6 @@
 {
   "name": "blake3",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "BLAKE3 hashing for JavaScript: native Node bindings (where available) and WebAssembly",
   "keywords": [
     "blake3",
