@@ -55,6 +55,13 @@ const minVersion = 64;
               {
                 // See: https://github.com/actions/setup-node/issues/68
                 shell: 'powershell',
+                name: 'use npm 6 on node 15',
+                run: 'npm install -g npm@6',
+                if: "matrix.os == 'windows-latest' && matrix.node-version == '15.x'",
+              },
+              {
+                // See: https://github.com/neon-bindings/neon/issues/589#issuecomment-735395787
+                shell: 'powershell',
                 name: 'patch node-gyp for VS 2019',
                 run:
                   'npm install --global node-gyp@latest\r\nnpm prefix -g | % {npm config set node_gyp "$_\\node_modules\\node-gyp\\bin\\node-gyp.js"}',
