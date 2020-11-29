@@ -2,6 +2,7 @@ import { writeFileSync } from 'fs';
 import { dump } from 'js-yaml';
 import fetch from 'node-fetch';
 import { join } from 'path';
+import { parseVersion } from './versions';
 
 const minVersion = 64;
 
@@ -52,13 +53,17 @@ const minVersion = 64;
           ...[...buildVersion.entries()]
             .map(([moduleVersion, nodeVersion], i) => [
               { uses: 'actions/setup-node@v1', with: { 'node-version': nodeVersion } },
-              {
-                // See: https://github.com/actions/setup-node/issues/68
-                shell: 'powershell',
-                name: 'use npm 6 on node 15',
-                run: 'npm install -g npm@6',
-                if: "matrix.os == 'windows-latest' && matrix.node-version == '15.x'",
-              },
+              ...(parseVersion(nodeVersion).major >= 15
+                ? [
+                    {
+                      // See: https://github.com/actions/setup-node/issues/68
+                      shell: 'powershell',
+                      name: 'use npm 6 on node 15',
+                      run: 'npm install -g npm@6',
+                      if: "matrix.os == 'windows-latest'",
+                    },
+                  ]
+                : []),
               {
                 // See: https://github.com/neon-bindings/neon/issues/589#issuecomment-735395787
                 shell: 'powershell',
