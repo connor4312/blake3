@@ -383,15 +383,7 @@ You can run benchmarks by installing `npm install -g @c4312/matcha`, then runnin
 
 This build is a little esoteric due to the mixing of languages. We use a `Makefile` to coodinate things.
 
-To get set up, you'll need the following. Windows users are recommended to use WSL, no effort has been made to make this repo Windows-compatible.
-
-- A recent version of Node.js, such as 12.x
-- A `make` command
-- [Rust installed locally](https://rustup.rs/)
-- `wasm-pack` installed (`cargo install wasm-pack` once you have rust)
-- `wasm-opt` to create production releases, part of [Binaryen](https://github.com/WebAssembly/binaryen)
-
-Then, run `make prepare` to install local dependencies.
+To get set up, you'll want to open the repository in VS Code. Make sure you have [Remote Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) installed, and then accept the "Reopen in Container" prompt when opening the folder. This will get the environment set up with everything you need. Then, run `make prepare` to install local dependencies.
 
 Finally, `make` will create a build for you; you can run `make MODE=release` for a production release, and certainly should if you want to [benchmark it](#speed).
 
