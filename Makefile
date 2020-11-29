@@ -47,6 +47,7 @@ clean:
 prepare-binaries: $(TS_OUT)
 	git checkout generate-binary
 	git reset --hard origin/master
+	./node_modules/.bin/tsc
 	node dist/build/generate-tasks
 	git add . && git commit -m "generate build tasks" || echo "No update to build tasks"
 	git push -u origin generate-binary -f
