@@ -1,7 +1,7 @@
-import fetch from 'node-fetch';
 import { writeFileSync } from 'fs';
-import { join } from 'path';
 import { dump } from 'js-yaml';
+import fetch from 'node-fetch';
+import { join } from 'path';
 
 const minVersion = 64;
 
@@ -52,19 +52,17 @@ const minVersion = 64;
           ...[...buildVersion.entries()]
             .map(([moduleVersion, nodeVersion], i) => [
               { uses: 'actions/setup-node@v1', with: { 'node-version': nodeVersion } },
-              ...(i === 0
-                ? [{ run: 'npm install neon-cli rimraf' }]
-                : [
-                    {
-                      // See: https://github.com/actions/setup-node/issues/68
-                      shell: 'powershell',
-                      name: 'patch node-gyp for VS 2019',
-                      run:
-                        'npm install --global node-gyp@latest\r\nnpm prefix -g | % {npm config set node_gyp "$_\\node_modules\\node-gyp\\bin\\node-gyp.js"}',
-                      if: "matrix.os == 'windows-latest'",
-                    },
-                    { run: './node_modules/.bin/rimraf rs/native/target' },
-                  ]),
+              {
+                // See: https://github.com/actions/setup-node/issues/68
+                shell: 'powershell',
+                name: 'patch node-gyp for VS 2019',
+                run:
+                  'npm install --global node-gyp@latest\r\nnpm prefix -g | % {npm config set node_gyp "$_\\node_modules\\node-gyp\\bin\\node-gyp.js"}',
+                if: "matrix.os == 'windows-latest'",
+              },
+              i === 0
+                ? { run: 'npm install neon-cli rimraf' }
+                : { run: './node_modules/.bin/rimraf rs/native/target' },
               { run: '../node_modules/.bin/neon build --release', 'working-directory': 'rs' },
               { run: `mv rs/native/index.node dist/\${{ matrix.os }}-${moduleVersion}.node` },
             ])
