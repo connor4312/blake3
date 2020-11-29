@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.5 - 2020-11-28
+
+- fix version matching on postinstall
+- build for node 15
+
 ## 2.1.4 - 2020-05-11
 
 - add support for Node 14

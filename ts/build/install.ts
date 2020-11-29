@@ -1,8 +1,8 @@
-import { readFileSync, writeFileSync, createWriteStream } from 'fs';
+import { createWriteStream, readFileSync, writeFileSync } from 'fs';
+import { get } from 'https';
 import { join } from 'path';
 import { pipeline } from 'stream';
-import { get } from 'https';
-import { getMajorVersion, minNodeVersion } from './versions';
+import { compareVersion, IVersion, parseVersion } from './versions';
 
 /**
  * Post-install script. Downloads the binary for the current Node.js version
@@ -17,25 +17,17 @@ const builtPlatforms: { [K in NodeJS.Platform]?: string } = {
 
 const { version } = require('../../package.json');
 const repoUrl = process.env.BLAKE3_REPO_URL || 'https://github.com/connor4312/blake3';
-const issueUrl = `${repoUrl}/issues/new`;
 const targets = require('../../targets.json');
 const bindingPath = join(__dirname, '..', 'native.node');
 
 async function install() {
-  const majorVersion = getMajorVersion(process.version);
-  if (Number(majorVersion) < Number(minNodeVersion)) {
+  const current = parseVersion(process.version);
+  const api = getBestAbiVersion(current);
+  if (!api) {
     console.error(
       'Your Node.js release is out of LTS and BLAKE3 bindings are not built for it. Update it to use native BLAKE3 bindings.',
     );
     return fallback();
-  }
-
-  let apiVersion = targets[process.version];
-  if (!apiVersion) {
-    console.error(
-      `API version for node@${process.version} ${process.platform} not explicitly built, falling back to latest. If this does not work, open an issue at ${issueUrl}`,
-    );
-    apiVersion = Object.values(targets)[0];
   }
 
   const platform = builtPlatforms[process.platform];
@@ -45,19 +37,30 @@ async function install() {
   }
 
   console.log(
-    `Retrieving native BLAKE3 bindings for Node v${majorVersion} on ${process.platform}...`,
+    `Retrieving native BLAKE3 bindings for Node ${api.nodeVersion} on ${process.platform}...`,
   );
-  await download(`${repoUrl}/releases/download/v${version}/${platform}-${apiVersion}.node`);
+  await download(`${repoUrl}/releases/download/v${version}/${platform}-${api.abiVersion}.node`);
 
   try {
     require(bindingPath);
   } catch (e) {
-    console.log(`Error trying to import bindings: ${e.stack}`);
+    console.log(`Error trying to import bindings: ${e.message}`);
     return fallback();
   }
 
   useNativeImport();
   console.log('BLAKE3 bindings retrieved');
+}
+
+function getBestAbiVersion(current: IVersion) {
+  for (const targetVersion of Object.keys(targets)) {
+    const parsed = parseVersion(targetVersion);
+    if (compareVersion(current, parsed) >= 0) {
+      return { nodeVersion: targetVersion, abiVersion: targets[targetVersion] };
+    }
+  }
+
+  return undefined;
 }
 
 function fallback() {
