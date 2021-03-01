@@ -7,7 +7,7 @@ textarea {
 }
 
 textarea:focus {
-  @apply outline-none shadow-outline;
+  @apply outline-none ring;
 }
 
 .encode-selector {
@@ -47,4 +47,8 @@ textarea:focus {
 
 .fancy-radio:checked + label::before {
   @apply bg-blue-600;
+}
+
+#hash-output {
+  @apply font-mono;
 }

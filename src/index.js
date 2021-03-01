@@ -1,12 +1,13 @@
 import './index.css';
+import { Buffer } from 'buffer';
+
+const blake3 = import('blake3/browser');
 
 const els = {
   input: document.getElementById('hash-input'),
   output: document.getElementById('hash-output'),
   length: document.getElementById('bytes'),
 };
-
-const blake3 = import('blake3/browser');
 
 function getSelectValue(name) {
   const radios = document.getElementsByName(name);
@@ -19,12 +20,12 @@ function getSelectValue(name) {
   return null;
 }
 
-[els.length, els.input].forEach(el => {
+[els.length, els.input].forEach((el) => {
   el.addEventListener('change', rehash);
   el.addEventListener('keyup', rehash);
 });
 
-[...document.querySelectorAll('input[type="radio"]')].forEach(el =>
+[...document.querySelectorAll('input[type="radio"]')].forEach((el) =>
   el.addEventListener('change', rehash),
 );
 

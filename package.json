@@ -1,23 +1,26 @@
 {
   "scripts": {
-    "build": "rm -rf dist && ENV=production webpack",
-    "watch": "ENV=development webpack"
+    "build": "rimraf dist && webpack --mode production",
+    "watch": "webpack --mode development --watch"
   },
   "devDependencies": {
-    "@fullhuman/postcss-purgecss": "^2.0.4",
-    "blake3": "^2.0.0",
-    "css-loader": "^3.4.2",
-    "postcss-import": "^12.0.1",
-    "postcss-loader": "^3.0.0",
-    "prettier": "^1.19.1",
-    "style-loader": "^1.1.3",
-    "tailwindcss": "^1.1.4",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "@fullhuman/postcss-purgecss": "^4.0.2",
+    "blake3": "^2.1.4",
+    "buffer": "^6.0.3",
+    "css-loader": "^5.1.1",
+    "postcss-import": "^14.0.0",
+    "postcss-loader": "^5.0.0",
+    "prettier": "^2.2.1",
+    "rimraf": "^3.0.2",
+    "style-loader": "^2.0.0",
+    "tailwindcss": "^2.0.3",
+    "webpack": "^5.24.2",
+    "webpack-cli": "^4.5.0"
   },
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,
     "trailingComma": "all"
-  }
+  },
+  "dependencies": {}
 }

@@ -9,6 +9,9 @@ module.exports = {
     path: path.join(__dirname, 'dist'),
     publicPath: './dist/',
   },
+  experiments: {
+    syncWebAssembly: true,
+  },
   module: {
     rules: [
       {
@@ -19,14 +22,15 @@ module.exports = {
           {
             loader: 'postcss-loader',
             options: {
-              ident: 'postcss',
-              plugins: loader => [
-                require('postcss-import')({ root: loader.resourcePath }),
-                require('tailwindcss'),
-                require('@fullhuman/postcss-purgecss')({
-                  content: ['./index.html'],
-                }),
-              ],
+              postcssOptions: {
+                plugins: [
+                  require('postcss-import'),
+                  require('tailwindcss'),
+                  require('@fullhuman/postcss-purgecss')({
+                    content: ['./index.html'],
+                  }),
+                ],
+              },
             },
           },
         ],
