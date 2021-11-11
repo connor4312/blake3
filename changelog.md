@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.7 - 2021-11-10
+
+- fix publishing failure in 2.1.6
+
 ## 2.1.6 - 2021-11-10
 
 - build for node 16

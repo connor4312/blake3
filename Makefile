@@ -47,6 +47,7 @@ $(TS_OUT): $(TS_SRC) $(RUST_WASM_OUT)
 
 $(RUST_WASM_OUT): $(RUST_WASM_SRC)
 	wasm-pack build rs/wasm --$(MODE) -t $(word 3, $(subst /, ,$@)) -d ../../$(dir $@)
+	rm $(dir $@)/.gitignore
 
 clean:
 	rm -rf esm dist
