@@ -383,6 +383,10 @@ You can run benchmarks by installing `npm install -g @c4312/matcha`, then runnin
            65.2 ops/sec > 6MB#blake3 wasm (1x)
             502 ops/sec > 6MB#blake3 native (7.7x)
 
+## Other (JS) Implementations
+
+- [Brooooooklyn/blake-hash](https://github.com/Brooooooklyn/blake-hash)
+
 ## Contributing
 
 This build is a little esoteric due to the mixing of languages. We use a `Makefile` to coodinate things.
