@@ -4,7 +4,7 @@ import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';
 import { tmpdir } from 'os';
 import { resolve } from 'path';
-import puppeteer, { Page } from 'puppeteer';
+import { Browser, chromium, Page } from 'playwright';
 import handler from 'serve-handler';
 import webpack from 'webpack';
 import { hello48, inputs, ogTestVectors } from './base/test-helpers';
@@ -18,7 +18,8 @@ describe('browser', () => {
   describe('webpack', () => {
     const testDir = resolve(tmpdir(), 'blake3-browser-test');
     let server: Server;
-    let page: puppeteer.Page;
+    let browser: Browser;
+    let page: Page;
 
     /**
      * Builds the browser lib into the testDir.
@@ -64,7 +65,7 @@ describe('browser', () => {
 
     async function serve() {
       server = createServer((req, res) => handler(req, res, { public: testDir }));
-      await new Promise(resolve => server.listen(0, resolve));
+      await new Promise<void>(resolve => server.listen(0, resolve));
     }
 
     before(async function() {
@@ -74,10 +75,7 @@ describe('browser', () => {
       this.timeout(20 * 1000);
 
       const { port } = server.address() as AddressInfo;
-      const browser = await puppeteer.launch({
-        executablePath: 'google-chrome-stable',
-        args: ['--no-sandbox'],
-      });
+      browser = await chromium.launch();
       page = await browser.newPage();
       await page.goto(`http://localhost:${port}`);
       await page.waitForFunction('!!window.blake3');
@@ -90,19 +88,20 @@ describe('browser', () => {
       },
     });
 
-    after(() => {
-      page?.browser().close();
+    after(async () => {
+      await browser?.close();
       server?.close();
     });
   });
 
   describe('native browser', () => {
     let server: Server;
-    let page: puppeteer.Page;
+    let page: Page;
+    let browser: Browser;
 
     async function serve() {
       server = createServer((req, res) => handler(req, res, { public: resolve(__dirname, '..') }));
-      await new Promise(resolve => server.listen(0, resolve));
+      await new Promise<void>(resolve => server.listen(0, resolve));
     }
 
     before(async function() {
@@ -111,14 +110,11 @@ describe('browser', () => {
       this.timeout(20 * 1000);
 
       const { port } = server.address() as AddressInfo;
-      const browser = await puppeteer.launch({
-        executablePath: 'google-chrome-stable',
-        args: ['--no-sandbox'],
-      });
+      browser = await chromium.launch();
       page = await browser.newPage();
       page.on('console', console.log);
       page.on('pageerror', console.log);
-      page.on('error', console.log);
+      page.on('pageerror', console.log);
       await page.goto(`http://localhost:${port}/browser-async.test.html`);
       await page.waitForFunction('!!window.blake3');
       await page.evaluate(addInputs);
@@ -130,8 +126,8 @@ describe('browser', () => {
       },
     });
 
-    after(() => {
-      page?.browser().close();
+    after(async () => {
+      await browser?.close();
       server.close();
     });
   });

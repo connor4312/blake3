@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.6 - 2021-11-10
+
+- build for node 16
+
 ## 2.1.5 - 2020-11-28
 
 - fix version matching on postinstall
