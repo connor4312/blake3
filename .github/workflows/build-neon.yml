@@ -22,7 +22,7 @@ jobs:
           toolchain: nightly
       - uses: actions/setup-node@v1
         with:
-          node-version: v15.3.0
+          node-version: v16.13.0
       - shell: powershell
         name: patch node-gyp for VS 2019
         run: "npm install --global node-gyp@latest\r\nnpm prefix -g | % {npm config set node_gyp \"$_\\node_modules\\node-gyp\\bin\\node-gyp.js\"}"
