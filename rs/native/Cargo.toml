@@ -8,8 +8,8 @@ name = "thread_count"
 crate-type = ["cdylib"]
 
 [build-dependencies]
-neon-build = "0.7"
+neon-build = "0.9"
 
 [dependencies]
 blake3 = "1.2"
-neon = "0.7"
+neon = "0.9"
