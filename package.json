@@ -43,7 +43,7 @@
     "js-yaml": "^3.13.1",
     "mocha": "^7.0.0",
     "neon-cli": "^0.9.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.1",
     "prettier": "^1.19.1",
     "playwright": "^1.16.3",
     "remark-cli": "^7.0.1",
