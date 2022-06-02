@@ -114,7 +114,7 @@ Returns a hash for the given data. The data can be a string, buffer, typedarray,
 
 #### `keyedHash(key: Buffer, data: BinaryLike, options?: { length: number }): Buffer`
 
-Returns keyed a hash for the given data. The key must be exactly 32 bytes. The data can be a string, buffer, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a Buffer.
+Returns a keyed hash for the given data. The key must be exactly 32 bytes. The data can be a string, buffer, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a Buffer.
 
 For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
 
