@@ -13,4 +13,4 @@ if ((process as any).browser) {
   );
 }
 
-export * from './node';
+export * from './node/index';
