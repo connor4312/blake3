@@ -44,7 +44,7 @@ async function install() {
   try {
     require(bindingPath);
   } catch (e) {
-    console.log(`Error trying to import bindings: ${e.message}`);
+    console.log(`Error trying to import bindings: ${(e as Error).message}`);
     return fallback();
   }
 
@@ -68,13 +68,13 @@ function fallback() {
 }
 
 async function download(url: string): Promise<boolean> {
-  return new Promise<boolean>(resolve => {
+  return new Promise<boolean>((resolve) => {
     const onError = (err: Error) => {
       console.error(`Could not download binding from ${url}: ${err.stack || err.message}`);
       resolve(false);
     };
 
-    const req = get(url, res => {
+    const req = get(url, (res) => {
       if (res.headers.location) {
         resolve(download(res.headers.location));
         return;
@@ -86,7 +86,7 @@ async function download(url: string): Promise<boolean> {
         return;
       }
 
-      pipeline(res, createWriteStream(bindingPath), err => (err ? onError(err) : resolve(true)));
+      pipeline(res, createWriteStream(bindingPath), (err) => (err ? onError(err) : resolve(true)));
     });
 
     req.on('error', onError);
@@ -99,7 +99,7 @@ function useNativeImport() {
   writeFileSync(indexFile, contents.replace('"./node"', '"./node-native"'));
 }
 
-install().catch(err => {
+install().catch((err) => {
   console.error(`There was an uncaught error installing native bindings: ${err.stack}`);
   fallback();
 });

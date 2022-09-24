@@ -1,19 +1,7 @@
-import { BaseHashInput, IBaseHashOptions, inputToArray, defaultHashLength } from '../base/hash-fn';
-import { Hash } from './hash';
-import { getWasm } from './wasm';
-
-/**
- * Input used for browser-based hashes.
- */
-export type HashInput = BaseHashInput | string;
-
-const textEncoder = new TextEncoder();
-
-/**
- * @hidden
- */
-export const normalizeInput = (input: HashInput): Uint8Array =>
-  inputToArray(typeof input === 'string' ? textEncoder.encode(input) : input);
+import { defaultHashLength, HashInput, IBaseHashOptions, inputToArray } from '../base/hash-fn.js';
+import { hashOneShot } from '../base/hash-oneshots.js';
+import { createDeriveKey, createKeyed } from './hash-instance.js';
+import { Hash } from './hash.js';
 
 /**
  * Returns a blake3 hash of the input.
@@ -22,9 +10,9 @@ export function hash(
   input: HashInput,
   { length = defaultHashLength }: IBaseHashOptions = {},
 ): Hash {
-  const result = new Hash(length);
-  getWasm().hash(normalizeInput(input), result);
-  return result;
+  const hash = new Hash(length);
+  hash.set(hashOneShot(inputToArray(input), length));
+  return hash;
 }
 
 /**
@@ -33,32 +21,28 @@ export function hash(
  * for more information.
  */
 export function deriveKey(
-  context: string,
+  context: HashInput,
   material: HashInput,
   { length = defaultHashLength }: IBaseHashOptions = {},
 ) {
-  const derive = getWasm().create_derive(context);
-  derive.update(normalizeInput(material));
-  const result = new Hash(length);
-  derive.digest(result);
-  return result;
+  const derive = createDeriveKey(context);
+  derive.update(inputToArray(material));
+  const digest = derive.digest({ length });
+  derive.dispose();
+  return digest;
 }
 
 /**
  * The keyed hash function. See {@link https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html}.
  */
 export function keyedHash(
-  key: Uint8Array,
+  key: HashInput,
   input: HashInput,
   { length = defaultHashLength }: IBaseHashOptions = {},
 ) {
-  if (key.length !== 32) {
-    throw new Error(`key provided to keyedHash must be 32 bytes, got ${key.length}`);
-  }
-
-  const derive = getWasm().create_keyed(key);
-  derive.update(normalizeInput(input));
-  const result = new Hash(length);
-  derive.digest(result);
-  return result;
+  const keyed = createKeyed(inputToArray(key));
+  keyed.update(inputToArray(input));
+  const digest = keyed.digest({ length });
+  keyed.dispose();
+  return digest;
 }

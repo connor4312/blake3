@@ -17,11 +17,17 @@ export const defaultHashLength = 32;
 /**
  * A type that can be hashed.
  */
-export type BaseHashInput = Uint8Array | ArrayBuffer | SharedArrayBuffer | ArrayLike<number>;
+export type HashInput = Uint8Array | ArrayBuffer | SharedArrayBuffer | string;
+
+const textEncoder = new TextEncoder();
 
 /**
  * Converts the input to an Uint8Array.
  * @hidden
  */
-export const inputToArray = (input: BaseHashInput) =>
-  input instanceof Uint8Array ? input : new Uint8Array(input);
+export const inputToArray = (input: HashInput) =>
+  input instanceof Uint8Array
+    ? input
+    : typeof input === 'string'
+    ? textEncoder.encode(input)
+    : new Uint8Array(input);

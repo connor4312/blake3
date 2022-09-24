@@ -1,22 +1,22 @@
-import { BaseHash as BaseHasher } from '../base/index';
-import { normalizeInput, HashInput } from './hash-fn';
-import { BrowserEncoding, mustGetEncoder } from './encoding';
-import { IBaseHashOptions } from '../base/hash-fn';
-import { BrowserHashReader } from './hash-reader';
-import { IInternalReader } from '../base/hash-reader';
-import { Hash } from './hash';
-import { getWasm } from './wasm';
+import { HashInput, IBaseHashOptions, inputToArray } from '../base/hash-fn.js';
+import { getWasm, HashRaw, WasmHasher } from '../base/index.js';
+import { BrowserEncoding, mustGetEncoder } from './encoding.js';
+import { Hash } from './hash.js';
 
 /**
  * @inheritdoc
  */
-export class BrowserHasher extends BaseHasher<Hash, IInternalReader, BrowserHashReader> {
+export class BrowserHasher extends WasmHasher<Hash> {
+  protected alloc(n: number): Hash {
+    return new Hash(n);
+  }
+
   /**
    * @inheritdoc
    * @override
    */
   public update(data: HashInput): this {
-    return super.update(normalizeInput(data));
+    return super.update(inputToArray(data));
   }
 
   /**
@@ -47,19 +47,16 @@ export class BrowserHasher extends BaseHasher<Hash, IInternalReader, BrowserHash
 /**
  * A Node.js crypto-like createHash method.
  */
-export const createHash = () =>
-  new BrowserHasher(
-    getWasm().create_hasher(),
-    l => new Hash(l),
-    r => new BrowserHashReader(r),
-  );
+export const createHash = () => new BrowserHasher(getWasm(), HashRaw.default());
 
 /**
  * A Node.js crypto-like createHash method.
  */
-export const createKeyed = (key: Uint8Array) =>
-  new BrowserHasher(
-    getWasm().create_keyed(key),
-    l => new Hash(l),
-    r => new BrowserHashReader(r),
-  );
+export const createKeyed = (key: HashInput) =>
+  new BrowserHasher(getWasm(), HashRaw.keyed(inputToArray(key)));
+
+/**
+ * Construct a new Hasher for the key derivation function.
+ */
+export const createDeriveKey = (context: HashInput) =>
+  new BrowserHasher(getWasm(), HashRaw.derive(inputToArray(context)));

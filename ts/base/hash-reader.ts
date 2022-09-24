@@ -1,5 +1,3 @@
-import { IDisposable } from './disposable';
-
 /**
  * The maximum number of bytes that can be read from the hash.
  *
@@ -7,12 +5,15 @@ import { IDisposable } from './disposable';
  * targeting esnext/es2020 which includes features that Node 10 doesn't
  * yet supported.
  */
-export const maxHashBytes = BigInt('18446744073709551615');
+export const maxHashBytes = 2n ** 64n - 1n;
 
 /**
- * The HashReader is a type returned from any of the hash functions. It can
+ * The HashReader is a type returned from any of the hash functions.
+ *
+ * You can use it as an iterator, but note that slices returned from the
+ * iteration cannot be used outside. of where they were returned from.
  */
-export interface IHashReader<T> extends IDisposable {
+export interface IHashReader<T> extends Iterable<Readonly<Uint8Array>> {
   /**
    * Returns the position of the reader in the hash. Can be written to to seek.
    */
@@ -20,93 +21,23 @@ export interface IHashReader<T> extends IDisposable {
 
   /**
    * Reads data from the hash into the target array. The target will always
-   * be completely filled with data.
+   * be completely filled with data, unless the end of the hash bytes is
+   * reached. The number of written bytes is returned.
    */
-  readInto(target: Uint8Array): void;
+  readInto(target: Uint8Array): number;
 
   /**
    * Reads and returns the given number of bytes from the hash, advancing
    * the position of the reader.
    */
   read(bytes: number): T;
-}
-
-/**
- * Underlying native or wasm module code backing the reader.
- * @hidden
- */
-export interface IInternalReader {
-  free?(): void;
-  fill(target: Uint8Array): void;
-  set_position(position: bigint): void;
-}
-
-/**
- * Base hash reader implementation.
- */
-export abstract class BaseHashReader<T extends Uint8Array> implements IHashReader<T> {
-  private reader: IInternalReader | undefined;
-  private pos = BigInt(0);
-
-  public get position() {
-    return this.pos;
-  }
-
-  public set position(value: bigint) {
-    // to avoid footguns of people using numbers:
-    if (typeof value !== 'bigint') {
-      throw new Error(`Got a ${typeof value} set in to reader.position, expected a bigint`);
-    }
-
-    this.boundsCheck(value);
-    this.pos = value;
-    this.reader?.set_position(value);
-  }
-
-  constructor(reader: IInternalReader) {
-    this.reader = reader;
-  }
 
   /**
-   * @inheritdoc
+   * Returns a view of the given number of bytes from the reader. The view can
+   * be used synchronously, but must not be reused later. This is more
+   * efficient when using the webassembly version of the module.
+   *
+   * Fewer bytes may be returned than requested, if the number is large (>1MB).
    */
-  public readInto(target: Uint8Array): void {
-    if (!this.reader) {
-      throw new Error(`Cannot read from a hash after it was disposed`);
-    }
-
-    const next = this.pos + BigInt(target.length);
-    this.boundsCheck(next);
-    this.reader.fill(target);
-    this.position = next;
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public read(bytes: number): T {
-    const data = this.alloc(bytes);
-    this.readInto(data);
-    return data;
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public dispose() {
-    this.reader?.free?.();
-    this.reader = undefined;
-  }
-
-  protected abstract alloc(bytes: number): T;
-
-  private boundsCheck(position: BigInt) {
-    if (position > maxHashBytes) {
-      throw new RangeError(`Cannot read past ${maxHashBytes} bytes in BLAKE3 hashes`);
-    }
-
-    if (position < BigInt(0)) {
-      throw new RangeError(`Cannot read to a negative position`);
-    }
-  }
+  view(bytes: number): Readonly<Uint8Array>;
 }

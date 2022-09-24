@@ -4,5 +4,23 @@
   "editor.codeActionsOnSave": {
     "source.organizeImports": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "files.associations": {
+    "blake3.h": "c",
+    "blake3_impl.h": "c",
+    "stddef.h": "c",
+    "immintrin.h": "c",
+    "emscripten.h": "c",
+    "stdlib.h": "c"
+  },
+  "C_Cpp.default.includePath": [
+    "/home/node/emsdk/upstream/emscripten/system/include/**",
+    "${workspaceFolder}/BLAKE3/c/*"
+  ],
+  "[c]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+  },
+  "[cpp]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+  }
 }

@@ -1,4 +1,4 @@
-import { BrowserEncoding, mustGetEncoder } from './encoding';
+import { BrowserEncoding, mustGetEncoder } from './encoding.js';
 
 /**
  * Hash returned from functions in the browser.

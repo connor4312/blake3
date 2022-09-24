@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\ts">
+      <UniqueIdentifier>{537F4FF6-399F-0F4D-4E7F-A3CEAF924D9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\ts\node-native">
+      <UniqueIdentifier>{D44CFE8F-A7B9-9F01-E1E4-4A001593ECCF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3">
+      <UniqueIdentifier>{5E11B8FB-48D4-3981-6FB3-7F902C0D5CA8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3\c">
+      <UniqueIdentifier>{CAE7F8DA-E845-16F7-E8EA-8DBDBBC6BC28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3">
+      <UniqueIdentifier>{5E11B8FB-48D4-3981-6FB3-7F902C0D5CA8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3\c">
+      <UniqueIdentifier>{CAE7F8DA-E845-16F7-E8EA-8DBDBBC6BC28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3">
+      <UniqueIdentifier>{5E11B8FB-48D4-3981-6FB3-7F902C0D5CA8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3\c">
+      <UniqueIdentifier>{CAE7F8DA-E845-16F7-E8EA-8DBDBBC6BC28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3">
+      <UniqueIdentifier>{5E11B8FB-48D4-3981-6FB3-7F902C0D5CA8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3\c">
+      <UniqueIdentifier>{CAE7F8DA-E845-16F7-E8EA-8DBDBBC6BC28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3">
+      <UniqueIdentifier>{5E11B8FB-48D4-3981-6FB3-7F902C0D5CA8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3\c">
+      <UniqueIdentifier>{CAE7F8DA-E845-16F7-E8EA-8DBDBBC6BC28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3">
+      <UniqueIdentifier>{5E11B8FB-48D4-3981-6FB3-7F902C0D5CA8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3\c">
+      <UniqueIdentifier>{CAE7F8DA-E845-16F7-E8EA-8DBDBBC6BC28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3">
+      <UniqueIdentifier>{5E11B8FB-48D4-3981-6FB3-7F902C0D5CA8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\BLAKE3\c">
+      <UniqueIdentifier>{CAE7F8DA-E845-16F7-E8EA-8DBDBBC6BC28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:">
+      <UniqueIdentifier>{7B735499-E5DD-1C2B-6C26-70023832A1CF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Users">
+      <UniqueIdentifier>{E9F714C1-DA89-54E2-60CF-39FEB20BF756}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Users\conno">
+      <UniqueIdentifier>{A2B1D770-69CA-7C07-30B3-6DF347687535}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Users\conno\AppData">
+      <UniqueIdentifier>{F852EB63-437C-846A-220F-8D9ED6DAEC1D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Users\conno\AppData\Roaming">
+      <UniqueIdentifier>{D51E5808-912B-5C70-4BB7-475D1DBFA067}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Users\conno\AppData\Roaming\nvm">
+      <UniqueIdentifier>{1B85D12A-9F9C-E0A8-F82E-74864675B527}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Users\conno\AppData\Roaming\nvm\v16.14.0">
+      <UniqueIdentifier>{307CA61D-3AD8-F050-D20F-E1D4145E070C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Users\conno\AppData\Roaming\nvm\v16.14.0\node_modules">
+      <UniqueIdentifier>{56DF7A98-063D-FB9D-485C-089023B4C16A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Users\conno\AppData\Roaming\nvm\v16.14.0\node_modules\node-gyp">
+      <UniqueIdentifier>{77348C0E-2034-7791-74D5-63C077DF5A3B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C:\Users\conno\AppData\Roaming\nvm\v16.14.0\node_modules\node-gyp\src">
+      <UniqueIdentifier>{8CDEE807-BC53-E450-C8B8-4DEBB66742D4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ts\node-native\native.cc">
+      <Filter>..\ts\node-native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BLAKE3\c\blake3.c">
+      <Filter>..\BLAKE3\c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BLAKE3\c\blake3_dispatch.c">
+      <Filter>..\BLAKE3\c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BLAKE3\c\blake3_portable.c">
+      <Filter>..\BLAKE3\c</Filter>
+    </ClCompile>
+    <MASM Include="..\BLAKE3\c\blake3_avx2_x86-64_windows_msvc.asm">
+      <Filter>..\BLAKE3\c</Filter>
+    </MASM>
+    <MASM Include="..\BLAKE3\c\blake3_avx512_x86-64_windows_msvc.asm">
+      <Filter>..\BLAKE3\c</Filter>
+    </MASM>
+    <MASM Include="..\BLAKE3\c\blake3_sse2_x86-64_windows_msvc.asm">
+      <Filter>..\BLAKE3\c</Filter>
+    </MASM>
+    <MASM Include="..\BLAKE3\c\blake3_sse41_x86-64_windows_msvc.asm">
+      <Filter>..\BLAKE3\c</Filter>
+    </MASM>
+    <ClCompile Include="C:\Users\conno\AppData\Roaming\nvm\v16.14.0\node_modules\node-gyp\src\win_delay_load_hook.cc">
+      <Filter>C:\Users\conno\AppData\Roaming\nvm\v16.14.0\node_modules\node-gyp\src</Filter>
+    </ClCompile>
+    <None Include="..\binding.gyp">
+      <Filter>..</Filter>
+    </None>
+  </ItemGroup>
+</Project>

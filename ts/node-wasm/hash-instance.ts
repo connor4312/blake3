@@ -1,26 +1,46 @@
 import { Transform, TransformCallback } from 'stream';
-import { HashInput, IBaseHashOptions, IHasher, IHashReader, inputToArray } from '../base';
+import { getWasm, HashRaw, IHasher, WasmHasher } from '../base';
+import { HashInput, IBaseHashOptions, inputToArray } from '../base/hash-fn';
 
-//@ts-ignore
-import * as native from '../../build/Release/blake3';
+export interface INodeHash extends IHasher<Buffer> {
+  /**
+   * @inheritdoc
+   * @override
+   */
+  update(data: HashInput, encoding?: BufferEncoding): this;
 
-export const createHash = () => new NodeHash(native.createHash());
-export const createKeyed = (key: HashInput) => new NodeHash(native.createKeyed(inputToArray(key)));
-export const createDeriveKey = (material: HashInput) =>
-  new NodeHash(native.createDeriveKey(inputToArray(material)));
+  /**
+   * @inheritdoc
+   * @override
+   */
+  digest(options?: IBaseHashOptions): Buffer;
+
+  /**
+   * Returns a digest of the hash with the given set of hash options.
+   */
+  digest(encoding: undefined, options: IBaseHashOptions): Buffer;
+
+  /**
+   * Returns a digest of the hash with the given encoding.
+   */
+  digest(encoding: BufferEncoding, options?: IBaseHashOptions): string;
+}
+
+class BufferHash extends WasmHasher<Buffer> {
+  protected alloc(n: number): Buffer {
+    return Buffer.allocUnsafe(n);
+  }
+}
 
 /**
  * @inheritdoc
  */
 export class NodeHash extends Transform implements IHasher<Buffer> {
-  constructor(
-    private readonly hash: {
-      update(data: Uint8Array): void;
-      digest(length?: number): Buffer;
-      reader(): IHashReader<Buffer>;
-    },
-  ) {
+  private readonly hash: BufferHash;
+
+  constructor(wasmModule: any, hasher: HashRaw) {
     super();
+    this.hash = new BufferHash(wasmModule, hasher);
   }
 
   /**
@@ -44,7 +64,7 @@ export class NodeHash extends Transform implements IHasher<Buffer> {
    * @inheritdoc
    */
   public dispose(): void {
-    // no-op
+    this.hash.dispose();
   }
 
   /**
@@ -67,7 +87,7 @@ export class NodeHash extends Transform implements IHasher<Buffer> {
       resolvedEnc = encoding;
     }
 
-    const result = this.hash.digest(resolvedOpts?.length);
+    const result = this.hash.digest(resolvedOpts);
     return resolvedEnc ? result.toString(resolvedEnc) : result;
   }
 
@@ -88,3 +108,20 @@ export class NodeHash extends Transform implements IHasher<Buffer> {
     callback(null, this.digest());
   }
 }
+
+/**
+ * A Node.js crypto-like createHash method.
+ */
+export const createHash = () => new NodeHash(getWasm(), HashRaw.default());
+
+/**
+ * Construct a new Hasher for the keyed hash function.
+ */
+export const createKeyed = (key: HashInput) =>
+  new NodeHash(getWasm(), HashRaw.keyed(inputToArray(key)));
+
+/**
+ * Construct a new Hasher for the key derivation function.
+ */
+export const createDeriveKey = (context: HashInput) =>
+  new NodeHash(getWasm(), HashRaw.derive(inputToArray(context)));

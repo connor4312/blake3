@@ -1,12 +1,24 @@
 TARGETS=nodejs browser web
 MODE=dev
 
+EM_WASM_SRC = ts/wasm/blake3.c BLAKE3/c/blake3.c BLAKE3/c/blake3_dispatch.c BLAKE3/c/blake3_portable.c BLAKE3/c/blake3_sse41.c
+EM_WASM_OUT = dist/wasm/cjs/blake3.js dist/wasm/esm/blake3.mjs
+
 RUST_WASM_SRC = $(wildcard rs/wasm/src/*.rs)
 RUST_WASM_OUT = $(patsubst %, dist/wasm/%/blake3_js_bg.wasm, $(TARGETS))
 RUST_NATIVE_SRC = $(wildcard rs/native/src/*.rs)
 RUST_NATIVE_OUT = dist/native.node
 TS_SRC = $(wildcard ts/*.ts)
 TS_OUT = dist/index.js esm/index.js
+
+dist/wasm/%: $(EM_WASM_SRC)
+	mkdir -p $(dir $@)
+	emcc -O3 -msimd128 -msse4.1 $^ -o $@ \
+		-sEXPORTED_FUNCTIONS=_malloc,_free -sEXPORTED_RUNTIME_METHODS=ccall -IBLAKE3/c -sMODULARIZE -s 'EXPORT_NAME="createMyModule"' \
+		-sASSERTIONS=0 --profiling \
+		-DIS_WASM -DBLAKE3_NO_AVX512 -DBLAKE3_NO_SSE2 -DBLAKE3_NO_AVX2
+
+foo: $(EM_WASM_OUT)
 
 all: $(RUST_WASM_OUT) $(RUST_NATIVE_OUT) $(TS_OUT)
 

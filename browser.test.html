@@ -9,8 +9,9 @@
 
 <body>
   <script type="module">
-    import init from './browser-async.js';
-    init().then(blake3 => window.blake3 = blake3).catch(console.error);
+    import * as blake3 from './browser.js';
+    await blake3.load().catch(console.error);
+    window.blake3 = blake3;
   </script>
 </body>
 

@@ -1,5 +1,6 @@
+import { hashOneShot } from '../base';
 import { defaultHashLength, HashInput, IBaseHashOptions, inputToArray } from '../base/hash-fn';
-import { createDeriveKey, createHash, createKeyed } from './hash-instance';
+import { createDeriveKey, createKeyed } from './hash-instance';
 
 /**
  * Returns a blake3 hash of the input.
@@ -8,9 +9,7 @@ export function hash(
   input: HashInput,
   { length = defaultHashLength }: IBaseHashOptions = {},
 ): Buffer {
-  const hash = createHash();
-  hash.update(inputToArray(input));
-  return hash.digest({ length });
+  return Buffer.from(hashOneShot(inputToArray(input), length));
 }
 
 /**

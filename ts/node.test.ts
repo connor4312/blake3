@@ -1,9 +1,9 @@
-import * as wasm from './node';
-import * as native from './node-native';
 import { expect } from 'chai';
-import { inputs, hello48, ogTestVectors } from './base/test-helpers';
 import { ReadableStreamBuffer } from 'stream-buffers';
-import { maxHashBytes } from './base/hash-reader';
+import { IHashReader, maxHashBytes } from './base/hash-reader';
+import { hello48, inputs, ogTestVectors } from './base/test-helpers';
+import * as native from './node-native';
+import * as wasm from './node-wasm';
 
 function suite({
   hash,
@@ -66,14 +66,14 @@ function suite({
   });
 
   describe('hasher', () => {
-    it('digests', callback => {
+    it('digests', (callback) => {
       const buffer = new ReadableStreamBuffer();
       buffer.put(Buffer.from(inputs.large.input));
       buffer.stop();
 
       const hash = createHash();
 
-      buffer.on('data', b => hash.update(b));
+      buffer.on('data', (b) => hash.update(b));
       buffer.on('end', () => {
         const actual = hash.digest();
         expect(actual).to.deep.equal(inputs.large.hash);
@@ -81,7 +81,7 @@ function suite({
       });
     });
 
-    it('is a transform stream', callback => {
+    it('is a transform stream', (callback) => {
       const buffer = new ReadableStreamBuffer();
       buffer.put(Buffer.from(inputs.large.input));
       buffer.stop();
@@ -89,7 +89,7 @@ function suite({
       buffer
         .pipe(createHash())
         .on('error', callback)
-        .on('data', hash => {
+        .on('data', (hash) => {
           expect(hash).to.deep.equal(inputs.large.hash);
           callback();
         });
@@ -103,65 +103,43 @@ function suite({
       );
     });
 
-    it('throws on write after dispose', () => {
-      const hash = createHash();
-      hash.dispose();
-      expect(() => hash.update('')).to.throw(/after dispose/);
-    });
-
     it('allows taking incremental hashes', () => {
       const hasher = createHash();
       hasher.update('hel');
 
-      const hashA = hasher.digest(undefined, { dispose: false });
-      const readA = hasher.reader({ dispose: false });
+      const hashA = hasher.digest(undefined);
+      const readA = hasher.reader();
 
       hasher.update('lo');
-      const hashB = hasher.digest(undefined, { dispose: false });
-      const readB = hasher.reader({ dispose: false });
+      const hashB = hasher.digest(undefined);
+      const readB = hasher.reader();
 
       const expectedA = Buffer.from(
         '3121c5bb1b9193123447ac7cfda042f67f967e7a8cf5c12e7570e25529746e4a',
         'hex',
       );
       expect(hashA).to.deep.equal(expectedA);
-      expect(readA.toBuffer()).to.deep.equal(expectedA);
+      expect(readA.read(32)).to.deep.equal(expectedA);
 
       expect(hashB).to.deep.equal(inputs.hello.hash);
-      expect(readB.toBuffer()).to.deep.equal(inputs.hello.hash);
+      expect(readB.read(32)).to.deep.equal(inputs.hello.hash);
 
       hasher.dispose();
-      readA.dispose();
-      readB.dispose();
     });
   });
 
   describe('reader', () => {
-    let reader: wasm.NodeHashReader;
+    let reader: IHashReader<Uint8Array>;
     beforeEach(() => {
       const hash = createHash();
       hash.update(inputs.hello.input);
       reader = hash.reader();
     });
 
-    afterEach(() => reader.dispose());
-
-    it('implements toString()', () => {
-      expect(reader.toString('hex')).to.equal(inputs.hello.hash.toString('hex'));
-      reader.position = BigInt(42);
-      expect(reader.toString('hex')).to.equal(inputs.hello.hash.toString('hex'));
-    });
-
-    it('implements toBuffer()', () => {
-      expect(reader.toBuffer()).to.deep.equal(inputs.hello.hash);
-      reader.position = BigInt(42);
-      expect(reader.toBuffer()).to.deep.equal(inputs.hello.hash);
-    });
-
     it('implements readInto() and advances', () => {
       const actual = Buffer.alloc(32);
-      reader.readInto(actual.slice(0, 10));
-      reader.readInto(actual.slice(10));
+      reader.readInto(actual.subarray(0, 10));
+      reader.readInto(actual.subarray(10));
       expect(actual).to.deep.equal(inputs.hello.hash);
       expect(reader.position).to.equal(BigInt(32));
     });
@@ -187,7 +165,8 @@ function suite({
       expect(() => (reader.position = BigInt('18446744073709551616'))).to.throw(RangeError);
 
       reader.position = maxHashBytes - BigInt(1);
-      expect(() => reader.read(2)).to.throw(RangeError);
+      expect(reader.read(2)).to.have.lengthOf(1);
+      expect(reader.read(2)).to.have.lengthOf(0);
     });
   });
 
@@ -213,12 +192,12 @@ function suite({
           ).to.equal(expectedDerive);
         });
 
-        it('createDeriveKey()', callback => {
+        it('createDeriveKey()', (callback) => {
           const buffer = new ReadableStreamBuffer();
           buffer.put(Buffer.from(input));
           buffer.stop();
           const hash = createDeriveKey(ogTestVectors.context);
-          buffer.on('data', b => hash.update(b));
+          buffer.on('data', (b) => hash.update(b));
           buffer.on('end', () => {
             const actual = hash.digest({ length: expectedDerive.length / 2 }).toString('hex');
             expect(actual).to.equal(expectedDerive);
@@ -234,12 +213,12 @@ function suite({
           ).to.equal(expectedKeyed);
         });
 
-        it('createKeyed()', callback => {
+        it('createKeyed()', (callback) => {
           const buffer = new ReadableStreamBuffer();
           buffer.put(Buffer.from(input));
           buffer.stop();
           const hash = createKeyed(Buffer.from(ogTestVectors.key));
-          buffer.on('data', b => hash.update(b));
+          buffer.on('data', (b) => hash.update(b));
           buffer.on('end', () => {
             const actual = hash.digest({ length: expectedDerive.length / 2 }).toString('hex');
             expect(actual).to.equal(expectedKeyed);
@@ -251,5 +230,10 @@ function suite({
   });
 }
 
-describe('node.js wasm', () => suite(wasm));
+describe('node.js wasm', () => {
+  before(async () => {
+    await wasm.load();
+  });
+  suite(wasm);
+});
 describe('node.js native', () => suite(native));
