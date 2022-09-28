@@ -89,3 +89,4 @@ typings/
 /*.cpuprofile
 /targets.json
 /rs/native/artifacts.json
+/build

@@ -1,76 +1,55 @@
 TARGETS=nodejs browser web
 MODE=dev
 
-EM_WASM_SRC = ts/wasm/blake3.c BLAKE3/c/blake3.c BLAKE3/c/blake3_dispatch.c BLAKE3/c/blake3_portable.c BLAKE3/c/blake3_sse41.c
+BLAKE3_SRC = BLAKE3/c/blake3.c BLAKE3/c/blake3_dispatch.c BLAKE3/c/blake3_portable.c BLAKE3/c/blake3_sse41.c
+
+EM_WASM_SRC = ts/wasm/blake3.c $(BLAKE3_SRC)
 EM_WASM_OUT = dist/wasm/cjs/blake3.js dist/wasm/esm/blake3.mjs
 
-RUST_WASM_SRC = $(wildcard rs/wasm/src/*.rs)
-RUST_WASM_OUT = $(patsubst %, dist/wasm/%/blake3_js_bg.wasm, $(TARGETS))
-RUST_NATIVE_SRC = $(wildcard rs/native/src/*.rs)
-RUST_NATIVE_OUT = dist/native.node
-TS_SRC = $(wildcard ts/*.ts)
+BINDING_CONFIG = build/Makefile
+BINDING_SRC = $(wildcard ts/node-native/*.cc) $(BLAKE3_SRC) $(BINDING_CONFIG)
+BINDING_OUT = build/Release/blake3.node
+
+TS_SRC = $(wildcard ts/*.ts) $(wildcard ts/*/*.ts)
 TS_OUT = dist/index.js esm/index.js
 
-dist/wasm/%: $(EM_WASM_SRC)
-	mkdir -p $(dir $@)
-	emcc -O3 -msimd128 -msse4.1 $^ -o $@ \
+ALL_OUT = $(EM_WASM_OUT) $(TS_OUT) $(BINDING_OUT)
+
+define wasm-compile =
+emcc -O3 -msimd128 -msse4.1 $^ -o $@ \
 		-sEXPORTED_FUNCTIONS=_malloc,_free -sEXPORTED_RUNTIME_METHODS=ccall -IBLAKE3/c -sMODULARIZE -s 'EXPORT_NAME="createMyModule"' \
 		-sASSERTIONS=0 --profiling \
 		-DIS_WASM -DBLAKE3_NO_AVX512 -DBLAKE3_NO_SSE2 -DBLAKE3_NO_AVX2
+endef
 
-foo: $(EM_WASM_OUT)
+all: $(ALL_OUT)
 
-all: $(RUST_WASM_OUT) $(RUST_NATIVE_OUT) $(TS_OUT)
+dist/wasm/cjs/blake3.js: $(EM_WASM_SRC)
+	mkdir -p $(dir $@)
+	$(wasm-compile)
 
-publish: $(RUST_WASM_OUT) $(RUST_NATIVE_OUT) $(TS_OUT)
-	npm publish --unsafe-perm
-	cp package.json .original.package.json
-	cat .original.package.json | jq -M 'del(.scripts.install) | .name = "blake3-wasm"' > package.json
-	npm publish --unsafe-perm
-	mv -f .original.package.json package.json
+dist/wasm/esm/blake3.mjs: $(EM_WASM_SRC)
+	mkdir -p $(dir $@)
+	$(wasm-compile)
 
-prepare:
-	npm install
+$(BINDING_CONFIG):
+	node-gyp configure
 
-rust: $(RUST_WASM_OUT) $(RUST_NATIVE_OUT)
+$(BINDING_OUT): $(BINDING_SRC)
+	node-gyp build
 
-fmt: fmt-rs fmt-ts
-
-fmt-rs: $(RUST_NATIVE_SRC) $(RUST_WASM_SRC)
-	rustfmt $^
-
-fmt-ts: $(TS_SRC)
-	./node_modules/.bin/remark readme.md -f -o readme.md
-	./node_modules/.bin/prettier --write "ts/**/*.ts" "*.md"
-
-$(RUST_NATIVE_OUT): $(RUST_NATIVE_SRC)
-ifeq ($(MODE), release)
-	cd rs && ../node_modules/.bin/neon build --release
-else
-	cd rs && ../node_modules/.bin/neon build
-endif
-	mv rs/native/index.node $@
-
-$(TS_OUT): $(TS_SRC) $(RUST_WASM_OUT)
-	./node_modules/.bin/tsc
+$(TS_OUT): $(TS_SRC)
+	./node_modules/.bin/tsc -p tsconfig.json
 	./node_modules/.bin/tsc -p tsconfig.esm.json
-	node dist/build/add-js-extensions
-	node dist/build/generate-tasks
 
-$(RUST_WASM_OUT): $(RUST_WASM_SRC)
-	wasm-pack build rs/wasm --$(MODE) -t $(word 3, $(subst /, ,$@)) -d ../../$(dir $@)
-	rm $(dir $@)/.gitignore
+test: $(ALL_OUT)
+	node ./node_modules/.bin/mocha --require source-map-support/register --recursive "dist/**/*.test.js" --timeout 5000 $(TEST_ARGS)
 
 clean:
-	rm -rf esm dist
+	rm -rf build dist esm
 
-prepare-binaries: $(TS_OUT)
-	git checkout generate-binary
-	git reset --hard origin/master
-	./node_modules/.bin/tsc
-	node dist/build/generate-tasks
-	git add . && git commit -m "generate build tasks" || echo "No update to build tasks"
-	git push -u origin generate-binary -f
-	git checkout -
+fmt:
+	node ./node_modules/.bin/remark readme.md -f -o readme.md
+	node ./node_modules/.bin/prettier --write "ts/**/*.ts" "*.md"
 
-.PHONY: all clean prepare fmt fmt-rs fmt-ts prepare-binaries publish
+.PHONY: all clean test fmt

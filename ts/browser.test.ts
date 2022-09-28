@@ -33,7 +33,7 @@ describe('browser', () => {
 
       writeFileSync(
         resolve(testDir, 'entry-src.js'),
-        `import("blake3/browser").then(b3 => window.blake3 = b3);`,
+        `import("blake3/browser").then(b3 => b3.load().then(() => window.blake3 = b3));`,
       );
 
       const stats = await new Promise<webpack.Stats>((res, rej) =>
@@ -52,7 +52,7 @@ describe('browser', () => {
               },
             },
           },
-          (err, stats) => (err ? rej(err) : res(stats)),
+          (err, stats) => (err ? rej(err) : res(stats!)),
         ),
       );
 
@@ -65,10 +65,10 @@ describe('browser', () => {
 
     async function serve() {
       server = createServer((req, res) => handler(req, res, { public: testDir }));
-      await new Promise<void>(resolve => server.listen(0, resolve));
+      await new Promise<void>((resolve) => server.listen(0, resolve));
     }
 
-    before(async function() {
+    before(async function () {
       await buildWebpack();
       await serve();
 
@@ -101,10 +101,10 @@ describe('browser', () => {
 
     async function serve() {
       server = createServer((req, res) => handler(req, res, { public: resolve(__dirname, '..') }));
-      await new Promise<void>(resolve => server.listen(0, resolve));
+      await new Promise<void>((resolve) => server.listen(0, resolve));
     }
 
-    before(async function() {
+    before(async function () {
       await serve();
 
       this.timeout(20 * 1000);
@@ -115,7 +115,7 @@ describe('browser', () => {
       page.on('console', console.log);
       page.on('pageerror', console.log);
       page.on('pageerror', console.log);
-      await page.goto(`http://localhost:${port}/browser-async.test.html`);
+      await page.goto(`http://localhost:${port}/browser.test.html`);
       await page.waitForFunction('!!window.blake3');
       await page.evaluate(addInputs);
     });
@@ -195,7 +195,7 @@ function runTests(opts: { page: Page }) {
       const result = await opts.page.evaluate(`(() => {
         const hash = blake3.createHash();
         ${[...Buffer.from(inputs.hello.input)]
-          .map(byte => `hash.update(new Uint8Array([${byte}]));`)
+          .map((byte) => `hash.update(new Uint8Array([${byte}]));`)
           .join('\n')}
         return hash.digest('hex');
       })()`);
@@ -217,7 +217,7 @@ function runTests(opts: { page: Page }) {
       const result = await opts.page.evaluate(`(() => {
         const hash = blake3.createHash();
         ${[...Buffer.from(inputs.hello.input)]
-          .map(byte => `hash.update(new Uint8Array([${byte}]));`)
+          .map((byte) => `hash.update(new Uint8Array([${byte}]));`)
           .join('\n')}
         return hash.digest('hex');
       })()`);
@@ -232,18 +232,11 @@ function runTests(opts: { page: Page }) {
         const hash = blake3.createHash();
         hash.update("hello");
 
-        return blake3.using(hash.reader(), reader => [
-          reader.read(48).toString('hex'),
-          reader.toArray().toString('hex'),
-          reader.toString('hex'),
-        ]);
+        const reader = hash.reader();
+        return reader.read(48).toString('hex');
       })()`);
 
-      expect(result).to.deep.equal([
-        hello48.toString('hex'),
-        inputs.hello.hash.toString('hex'),
-        inputs.hello.hash.toString('hex'),
-      ]);
+      expect(result).to.deep.equal(hello48.toString('hex'));
     });
   });
 

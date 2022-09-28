@@ -27,7 +27,7 @@ RUN su node -c "git clone https://github.com/emscripten-core/emsdk.git /home/nod
 RUN su node -c "echo \"source /home/node/emsdk/emsdk_env.sh\" >> /home/node/.bashrc"
 
 # Install
-RUN su node -c "wget https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O binaryen.tar.gz && tar -xvf binaryen.tar.gz"
+RUN su node -c "cd /home/node && wget https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O binaryen.tar.gz && tar -xvf binaryen.tar.gz"
 ENV PATH="/home/node/binaryen-version_110/bin:${PATH}"
 
 # [Optional] Uncomment this section to install additional OS packages.

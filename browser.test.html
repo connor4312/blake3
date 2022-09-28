@@ -10,8 +10,9 @@
 <body>
   <script type="module">
     import * as blake3 from './browser.js';
-    await blake3.load().catch(console.error);
-    window.blake3 = blake3;
+    await blake3.load().catch(console.error).then(() => {
+      window.blake3 = blake3;
+    });
   </script>
 </body>
 

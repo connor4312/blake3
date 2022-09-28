@@ -20,10 +20,7 @@ export const getWasm = () => {
 const memoryDeallocator = new FinalizationRegistry<{
   wasm: WasmModule;
   address: number;
-}>((v) => {
-  console.log('calling finalizer');
-  v.wasm._free(v.address);
-});
+}>((v) => v.wasm._free(v.address));
 
 export const MAX_SCRATCH_SIZE = 1024 * 1024;
 

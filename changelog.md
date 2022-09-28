@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.0.0 - TBD
+
+- **breaking:** Node 16, or a modern browser, is required
+- **breaking:** `Node 16, or a modern browser, is required`
+- native module is now built post-download with node-gyp, removing most build headaches and allowing architecture-specific optimizations
+- calling `dispose()` on hash instances is now optional
+
 ## 2.1.7 - 2021-11-10
 
 - fix publishing failure in 2.1.6

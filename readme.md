@@ -14,48 +14,45 @@ Additionally, there's a flavor of the package which is identical except that it 
 - [API](#api)
   - [Node.js](#nodejs)
     - [`hash(data: BinaryLike, options?: { length: number }): Buffer`](#hashdata-binarylike-options--length-number--buffer)
-    - [`keyedHash(key: Buffer, data: BinaryLike, options?: { length: number }): Buffer`](#keyedhashkey-buffer-data-binarylike-options--length-number--buffer)
-    - [`deriveKey(context: string, material: BinaryLike, options?: { length: number }): Buffer`](#derivekeycontext-string-material-binarylike-options--length-number--buffer)
+    - [`keyedHash(key: BinaryLike, data: BinaryLike, options?: { length: number }): Buffer`](#keyedhashkey-binarylike-data-binarylike-options--length-number--buffer)
+    - [`deriveKey(context: BinaryLike, material: BinaryLike, options?: { length: number }): Buffer`](#derivekeycontext-binarylike-material-binarylike-options--length-number--buffer)
     - [Hasher](#hasher)
       - [`createHash(): Hasher`](#createhash-hasher)
-      - [`createKeyed(key: Buffer): Hasher`](#createkeyedkey-buffer-hasher)
-      - [`createDeriveKey(context: string): Hasher`](#createderivekeycontext-string-hasher)
+      - [`createKeyed(key: BinaryLike): Hasher`](#createkeyedkey-binarylike-hasher)
+      - [`createDeriveKey(context: BinaryLike): Hasher`](#createderivekeycontext-binarylike-hasher)
       - [`hasher.update(data: BinaryLike): this`](#hasherupdatedata-binarylike-this)
-      - [`hasher.digest(encoding?: string, options?: { length: number, dispose: boolean })): Buffer | string`](#hasherdigestencoding-string-options--length-number-dispose-boolean--buffer--string)
-      - [`hasher.reader(options?: { dispose: boolean }): HashReader`](#hasherreaderoptions--dispose-boolean--hashreader)
+      - [`hasher.digest(encoding?: string, options?: { length: number })): Buffer | string`](#hasherdigestencoding-string-options--length-number--buffer--string)
+      - [`hasher.reader(): HashReader`](#hasherreader-hashreader)
       - [`hasher.dispose()`](#hasherdispose)
     - [HashReader](#hashreader)
       - [`reader.position: bigint`](#readerposition-bigint)
-      - [`reader.readInto(target: Buffer): void`](#readerreadintotarget-buffer-void)
+      - [`reader.readInto(target: Uint8Array): number`](#readerreadintotarget-uint8array-number)
       - [`reader.read(bytes: number): Buffer`](#readerreadbytes-number-buffer)
-      - [`reader.toString([encoding]): string`](#readertostringencoding-string)
-      - [`reader.toBuffer(): Buffer`](#readertobuffer-buffer)
-      - [`reader.dispose()`](#readerdispose)
-    - [`using(disposable: IDisposable, fn: disposable => T): T`](#usingdisposable-idisposable-fn-disposable--t-t)
+      - [`reader.view(target: Buffer): Readonly<Uint8Array>`](#readerviewtarget-buffer-readonlyuint8array)
+      - [`reader[Symbol.iterator]`](#readersymboliterator)
   - [Browser](#browser)
     - [`hash(data: BinaryLike, options?: { length: number }): Hash`](#hashdata-binarylike-options--length-number--hash)
-    - [`keyedHash(key: Buffer, data: BinaryLike, options?: { length: number }): Hash`](#keyedhashkey-buffer-data-binarylike-options--length-number--hash)
-    - [`deriveKey(context: string, material: BinaryLike, options?: { length: number }): Hash`](#derivekeycontext-string-material-binarylike-options--length-number--hash)
+    - [`keyedHash(key: BinaryLike, data: BinaryLike, options?: { length: number }): Hash`](#keyedhashkey-binarylike-data-binarylike-options--length-number--hash)
+    - [`deriveKey(context: BinaryLike, material: BinaryLike, options?: { length: number }): Hash`](#derivekeycontext-binarylike-material-binarylike-options--length-number--hash)
     - [`Hash`](#hash)
       - [`hash.equals(other: Uint8Array)`](#hashequalsother-uint8array)
       - [`hash.toString(encoding: 'hex' | 'base64' | 'utf8'): string`](#hashtostringencoding-hex--base64--utf8-string)
     - [Hasher](#hasher-1)
       - [`createHash(): Hasher`](#createhash-hasher-1)
-      - [`createKeyed(key: Buffer): Hasher`](#createkeyedkey-buffer-hasher-1)
-      - [`createDeriveKey(context: string): Hasher`](#createderivekeycontext-string-hasher-1)
+      - [`createKeyed(key: BinaryLike): Hasher`](#createkeyedkey-binarylike-hasher-1)
+      - [`createDeriveKey(context: BinaryLike): Hasher`](#createderivekeycontext-binarylike-hasher-1)
       - [`hasher.update(data: BinaryLike): this`](#hasherupdatedata-binarylike-this-1)
-      - [`hasher.digest(encoding?: 'hex' | 'base64' | 'utf8', options?: { length: number, dispose: boolean })): Hash | string`](#hasherdigestencoding-hex--base64--utf8-options--length-number-dispose-boolean--hash--string)
-      - [`hasher.reader(options?: { dispose: boolean }): HashReader`](#hasherreaderoptions--dispose-boolean--hashreader-1)
+      - [`hasher.digest(encoding?: 'hex' | 'base64' | 'utf8', options?: { length: number })): Hash | string`](#hasherdigestencoding-hex--base64--utf8-options--length-number--hash--string)
+      - [`hasher.reader(): HashReader`](#hasherreader-hashreader-1)
       - [`hasher.dispose()`](#hasherdispose-1)
     - [HashReader](#hashreader-1)
       - [`reader.position: bigint`](#readerposition-bigint-1)
-      - [`reader.readInto(target: Uint8Array): void`](#readerreadintotarget-uint8array-void)
+      - [`reader.readInto(target: Uint8Array): number`](#readerreadintotarget-uint8array-number-1)
       - [`reader.read(bytes: number): Hash`](#readerreadbytes-number-hash)
-      - [`reader.toString(encoding?: string): string`](#readertostringencoding-string-string)
-      - [`reader.toArray(): Uint8Array`](#readertoarray-uint8array)
-      - [`reader.dispose()`](#readerdispose-1)
-    - [`using(disposable: IDisposable, fn: disposable => T): T`](#usingdisposable-idisposable-fn-disposable--t-t-1)
+      - [`reader.view(target: Buffer): Readonly<Uint8Array>`](#readerviewtarget-buffer-readonlyuint8array-1)
+      - [`reader[Symbol.iterator]`](#readersymboliterator-1)
 - [Speed](#speed)
+- [Other (JS) Implementations](#other-js-implementations)
 - [Contributing](#contributing)
   - [Publishing](#publishing)
 
@@ -72,7 +69,7 @@ blake3.hash('foo'); // => Buffer
 If you're in the browser, import `blake3/browser`. This includes a WebAssembly binary, so you probably want to import it asynchronously, like so:
 
 ```js
-import('blake3/browser').then(blake3 => {
+import('blake3/browser').then((blake3) => {
   blake3.hash('foo'); // => Uint8Array
 });
 ```
@@ -88,8 +85,8 @@ hash('some string'); // => hash a string to a uint8array
 
 // Update incrementally (Node and Browsers):
 const hash = createHash();
-stream.on('data', d => hash.update(d));
-stream.on('error', err => {
+stream.on('data', (d) => hash.update(d));
+stream.on('error', (err) => {
   // hashes use unmanaged memory in WebAssembly, always free them if you don't digest()!
   hash.dispose();
   throw err;
@@ -99,7 +96,7 @@ stream.on('end', () => finishedHash(hash.digest()));
 // Or, in Node, it's also a transform stream:
 createReadStream('file.txt')
   .pipe(createHash())
-  .on('data', hash => console.log(hash.toString('hex')));
+  .on('data', (hash) => console.log(hash.toString('hex')));
 ```
 
 ## API
@@ -112,13 +109,13 @@ The Node API can be imported via `require('blake3')`.
 
 Returns a hash for the given data. The data can be a string, buffer, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a Buffer.
 
-#### `keyedHash(key: Buffer, data: BinaryLike, options?: { length: number }): Buffer`
+#### `keyedHash(key: BinaryLike, data: BinaryLike, options?: { length: number }): Buffer`
 
 Returns keyed a hash for the given data. The key must be exactly 32 bytes. The data can be a string, buffer, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a Buffer.
 
 For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
 
-#### `deriveKey(context: string, material: BinaryLike, options?: { length: number }): Buffer`
+#### `deriveKey(context: BinaryLike, material: BinaryLike, options?: { length: number }): Buffer`
 
 The key derivation function. The data can be a string, buffer, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a Buffer.
 
@@ -131,40 +128,36 @@ The hasher is a type that lets you incrementally build a hash. It's compatible w
 ```js
 createReadStream('file.txt')
   .pipe(createHash())
-  .on('data', hash => console.log(hash.toString('hex')));
+  .on('data', (hash) => console.log(hash.toString('hex')));
 ```
 
 ##### `createHash(): Hasher`
 
 Creates a new hasher instance using the standard hash function.
 
-##### `createKeyed(key: Buffer): Hasher`
+##### `createKeyed(key: BinaryLike): Hasher`
 
 Creates a new hasher instance for a keyed hash. For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
 
-##### `createDeriveKey(context: string): Hasher`
+##### `createDeriveKey(context: BinaryLike): Hasher`
 
 Creates a new hasher instance for the key derivation function. For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.derive_key.html).
 
 ##### `hasher.update(data: BinaryLike): this`
 
-Adds data to a hash. The data can be a string, buffer, typedarray, array buffer, or array. This will throw if called after `digest()` or `dispose()`.
+Adds data to a hash. The data can be a string, buffer, typedarray, array buffer, or array.
 
-##### `hasher.digest(encoding?: string, options?: { length: number, dispose: boolean })): Buffer | string`
+##### `hasher.digest(encoding?: string, options?: { length: number })): Buffer | string`
 
 Returns the hash of the data. If an `encoding` is given, a string will be returned. Otherwise, a Buffer is returned. Optionally, you can specify the requested byte length of the hash.
 
-If `dispose: false` is given in the options, the hash will not automatically be disposed of, allowing you to continue updating it after obtaining the current reader.
-
-##### `hasher.reader(options?: { dispose: boolean }): HashReader`
+##### `hasher.reader(): HashReader`
 
 Returns a [HashReader](#HashReader) for the current hash.
 
-If `dispose: false` is given in the options, the hash will not automatically be disposed of, allowing you to continue updating it after obtaining the current reader.
-
 ##### `hasher.dispose()`
 
-Disposes of unmanaged resources. You should _always_ call this if you don't call `digest()` to free umanaged (WebAssembly-based) memory.
+This is a no-op for Node.js.
 
 #### HashReader
 
@@ -178,52 +171,34 @@ A property which gets or sets the position of the reader in the output stream. A
 reader.position += 32n; // advance the reader 32 bytes
 ```
 
-##### `reader.readInto(target: Buffer): void`
+##### `reader.readInto(target: Uint8Array): number`
 
-Reads bytes into the target array, filling it up and advancing the reader's position. A `RangeError` is thrown if reading this data puts the reader past 2<sup>64</sup>-1 bytes.
+Reads bytes into the target array, filling it up and advancing the reader's position. It returns the number of bytes written, which may be less then the size of the target buffer if position 2<sup>64</sup>-1 is reached.
 
 ##### `reader.read(bytes: number): Buffer`
 
 Reads and returns the given number of bytes from the reader, and advances the position. A `RangeError` is thrown if reading this data puts the reader past 2<sup>64</sup>-1 bytes.
 
-##### `reader.toString([encoding]): string`
+##### `reader.view(target: Buffer): Readonly<Uint8Array>`
 
-Converts first 32 bytes of the hash to a string with the given encoding. Defaults to hex encoding.
+Returns a view of the given number of bytes from the reader. The view can be used synchronously, but must not be reused later. This is more efficient when using the webassembly version of the module.
 
-##### `reader.toBuffer(): Buffer`
+Fewer bytes may be returned than requested, if the number is large (>1MB).
 
-Converts first 32 bytes of the hash to a Buffer.
+##### `reader[Symbol.iterator]`
 
-##### `reader.dispose()`
-
-Disposes of unmanaged resources. You should _always_ call this to free umanaged (WebAssembly-based) memory, or you application will leak memory.
-
-#### `using(disposable: IDisposable, fn: disposable => T): T`
-
-A helper method that takes a disposable, and automatically calls the dispose method when the function returns, or the promise returned from the function is settled.
-
-```js
-// read and auto-dispose the first 64 bytes
-const first64Bytes = using(hash.reader(), reader => reader.toBuffer(64));
-
-// you can also return promises/use async methods:
-using(hash.reader(), async reader => {
-  do {
-    await send(reader.read(64));
-  } while (needsMoreData());
-});
-```
+The reader is an `Iterable` of `Readonly<Uint8Array>`s. Like the `view` method, the iterated arrays will be reused internally on the next iteration, so if you need data, you should copy it out of the iterated array.
 
 ### Browser
 
 The browser API can be imported via `import('blake3/browser')`, which works well with Webpack.
 
-If you aren't using a bundler or using a more "pure" bundler like Parcel, you can import `blake3/browser-async` which exports a function to asynchronously load the WebAssembly code and resolves to the package contents.
+Note that you **must** call the load() method before using any function in the module.
 
 ```js
-import load from 'blake3/browser-async';
+import * as blake3 from 'blake3/browser-async';
 
-load().then(blake3 => {
+blake3.load().then(() => {
   console.log(blake3.hash('hello world'));
 });
 ```
@@ -232,13 +207,13 @@ load().then(blake3 => {
 
 Returns a hash for the given data. The data can be a string, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a [Hash](#Hash) instance.
 
-#### `keyedHash(key: Buffer, data: BinaryLike, options?: { length: number }): Hash`
+#### `keyedHash(key: BinaryLike, data: BinaryLike, options?: { length: number }): Hash`
 
 Returns keyed a hash for the given data. The key must be exactly 32 bytes. The data can be a string, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a [Hash](#Hash) instance.
 
 For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
 
-#### `deriveKey(context: string, material: BinaryLike, options?: { length: number }): Hash`
+#### `deriveKey(context: BinaryLike, material: BinaryLike, options?: { length: number }): Hash`
 
 The key derivation function. The data can be a string, typedarray, array buffer, or array. By default, it generates the first 32 bytes of the hash for the data, but this is configurable. It returns a [Hash](#Hash) instance.
 
@@ -283,11 +258,11 @@ Converts the hash to a string with the given encoding.
 
 Creates a new hasher instance using the standard hash function.
 
-##### `createKeyed(key: Buffer): Hasher`
+##### `createKeyed(key: BinaryLike): Hasher`
 
 Creates a new hasher instance for a keyed hash. For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.keyed_hash.html).
 
-##### `createDeriveKey(context: string): Hasher`
+##### `createDeriveKey(context: BinaryLike): Hasher`
 
 Creates a new hasher instance for the key derivation function. For more information, see [the blake3 docs](https://docs.rs/blake3/0.1.3/blake3/fn.derive_key.html).
 
@@ -295,21 +270,17 @@ Creates a new hasher instance for the key derivation function. For more informat
 
 Adds data to a hash. The data can be a string, buffer, typedarray, array buffer, or array. This will throw if called after `digest()` or `dispose()`.
 
-##### `hasher.digest(encoding?: 'hex' | 'base64' | 'utf8', options?: { length: number, dispose: boolean })): Hash | string`
+##### `hasher.digest(encoding?: 'hex' | 'base64' | 'utf8', options?: { length: number })): Hash | string`
 
 Returns the hash of the data. If an `encoding` is given, a string will be returned. Otherwise, a [Hash](#hash) is returned. Optionally, you can specify the requested byte length of the hash.
 
-If `dispose: false` is given in the options, the hash will not automatically be disposed of, allowing you to continue updating it after obtaining the current reader.
-
-##### `hasher.reader(options?: { dispose: boolean }): HashReader`
+##### `hasher.reader(): HashReader`
 
 Returns a [HashReader](#HashReader) for the current hash.
 
-If `dispose: false` is given in the options, the hash will not automatically be disposed of, allowing you to continue updating it after obtaining the current reader.
-
 ##### `hasher.dispose()`
 
-Disposes of unmanaged resources. You should _always_ call this if you don't call `digest()` to free umanaged (WebAssembly-based) memory.
+Disposes of webassembly-allocated resources. Resources are free automatically via a `FinalizationRegistry` for hashers, but you may call this manually if you run into resource-constraint issues.
 
 #### HashReader
 
@@ -323,41 +294,23 @@ A property which gets or sets the position of the reader in the output stream. A
 reader.position += 32n; // advance the reader 32 bytes
 ```
 
-##### `reader.readInto(target: Uint8Array): void`
+##### `reader.readInto(target: Uint8Array): number`
 
-Reads bytes into the target array, filling it up and advancing the reader's position. A `RangeError` is thrown if reading this data puts the reader past 2<sup>64</sup>-1 bytes.
+Reads bytes into the target array, filling it up and advancing the reader's position. It returns the number of bytes written, which may be less then the size of the target buffer if position 2<sup>64</sup>-1 is reached.
 
 ##### `reader.read(bytes: number): Hash`
 
 Reads and returns the given number of bytes from the reader, and advances the position. A `RangeError` is thrown if reading this data puts the reader past 2<sup>64</sup>-1 bytes.
 
-##### `reader.toString(encoding?: string): string`
+##### `reader.view(target: Buffer): Readonly<Uint8Array>`
 
-Converts first 32 bytes of the hash to a string with the given encoding. Defaults to hex encoding.
+Returns a view of the given number of bytes from the reader. The view can be used synchronously, but must not be reused later. This is more efficient when using the webassembly version of the module.
 
-##### `reader.toArray(): Uint8Array`
+Fewer bytes may be returned than requested, if the number is large (>1MB).
 
-Converts first 32 bytes of the hash to an array.
+##### `reader[Symbol.iterator]`
 
-##### `reader.dispose()`
-
-Disposes of unmanaged resources. You should _always_ call this to free umanaged (WebAssembly-based) memory, or you application will leak memory.
-
-#### `using(disposable: IDisposable, fn: disposable => T): T`
-
-A helper method that takes a disposable, and automatically calls the dispose method when the function returns, or the promise returned from the function is settled.
-
-```js
-// read and auto-dispose the first 64 bytes
-const first64Bytes = using(hash.reader(), reader => reader.toArray(64));
-
-// you can also return promises/use async methods:
-using(hash.reader(), async reader => {
-  do {
-    await send(reader.read(64));
-  } while (needsMoreData());
-});
-```
+The reader is an `Iterable` of `Readonly<Uint8Array>`s. Like the `view` method, the iterated arrays will be reused internally on the next iteration, so if you need data, you should copy it out of the iterated array.
 
 ## Speed
 

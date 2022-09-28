@@ -6,9 +6,9 @@ const decoder = new TextDecoder();
 
 const encoders: { [K in BrowserEncoding]: (data: Uint8Array) => string } = {
   // certainly not the fastest, but hashes are pretty small
-  base64: data => btoa(String.fromCharCode(...data)),
+  base64: (data) => btoa(String.fromCharCode(...data)),
 
-  hex: data => {
+  hex: (data) => {
     let out = '';
     for (const byte of data) {
       if (byte < 0x10) {
@@ -21,7 +21,7 @@ const encoders: { [K in BrowserEncoding]: (data: Uint8Array) => string } = {
     return out;
   },
 
-  utf8: data => decoder.decode(data),
+  utf8: (data) => decoder.decode(data),
 };
 
 /**
