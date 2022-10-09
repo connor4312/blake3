@@ -1,0 +1,5 @@
+/*
+!/*.{cjs,mjs,map}
+!/*.d.{cts,mts}
+/test*
+/*.test.*

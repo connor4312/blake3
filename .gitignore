@@ -83,10 +83,10 @@ typings/
 
 # End of https://www.gitignore.io/api/node
 
-/dist
-/esm
 /*.tgz
 /*.cpuprofile
 /targets.json
-/rs/native/artifacts.json
-/build
+/*/build
+/*/dist
+/*/esm
+/blake3-native/c

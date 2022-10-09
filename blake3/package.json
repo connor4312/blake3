@@ -1,0 +1,36 @@
+{
+  "name": "blake3",
+  "version": "2.1.7",
+  "description": "BLAKE3 hashing for JavaScript",
+  "engines": {
+    "node": ">=16"
+  },
+  "keywords": [
+    "blake3",
+    "webassembly",
+    "wasm",
+    "hash"
+  ],
+  "browser": "./browser.mjs",
+  "module": "./index.mjs",
+  "main": "./index.cjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/connor4312/blake3.git"
+  },
+  "scripts": {
+    "postinstall": "node set-node-module.cjs"
+  },
+  "bugs": {
+    "url": "https://github.com/connor4312/blake3/issues"
+  },
+  "homepage": "https://github.com/connor4312/blake3#readme",
+  "author": "Connor Peet <connor@peet.io>",
+  "license": "MIT",
+  "dependencies": {
+    "blake3-wasm": "2.1.7"
+  },
+  "optionalDependencies": {
+    "@c4312/blake3-native": "2.1.7"
+  }
+}

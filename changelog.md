@@ -1,11 +1,12 @@
 # Changelog
 
-## 3.0.0 - TBD
+## 3.0.0 - 2022-10-08
 
 - **breaking:** Node 16, or a modern browser, is required
-- **breaking:** `Node 16, or a modern browser, is required`
-- native module is now built post-download with node-gyp, removing most build headaches and allowing architecture-specific optimizations
+- **breaking:**   native module is now built post-download with node-gyp, removing most build headaches and allowing architecture-specific optimizations. You do therefore need [node-gyp dependencies](https://github.com/nodejs/node-gyp#installation) to use the native module. (However, it automatically falls back to wasm if node-gyp building fails)
+- **breaking**: _all_ consumers must await `blake3.load()` before using hash functions
 - calling `dispose()` on hash instances is now optional
+- blake3 now uses SIMD operations both for native hashing and in WebAssembly
 
 ## 2.1.7 - 2021-11-10
 

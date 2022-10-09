@@ -1,39 +1,19 @@
 {
   "name": "blake3",
-  "version": "2.1.7",
-  "description": "BLAKE3 hashing for JavaScript: native Node bindings (where available) and WebAssembly",
-  "engines": {
-    "node": ">=16"
-  },
-  "keywords": [
+  "workspaces": [
     "blake3",
-    "node-addon",
-    "hash",
-    "webassembly",
-    "wasm"
+    "blake3-internal",
+    "blake3-native",
+    "blake3-wasm"
   ],
-  "gypfile": true,
-  "module": "./esm/index",
-  "browser": "./esm/browser/index",
-  "main": "./dist/index",
   "scripts": {
-    "postinstall": "git submodule update --init --recursive && cd BLAKE3 && git reset --hard && git apply ../blake3.patch",
-    "prepack": "make clean && make all && make test",
+    "preinstall": "cp -R ",
+    "pack-all": "make clean && make all && make test && make pack",
     "test": "make test",
     "fmt": "make fmt",
     "compile": "make all",
     "watch": "tsc --watch"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/connor4312/blake3.git"
-  },
-  "bugs": {
-    "url": "https://github.com/connor4312/blake3/issues"
-  },
-  "homepage": "https://github.com/connor4312/blake3#readme",
-  "author": "Connor Peet <connor@peet.io>",
-  "license": "MIT",
   "devDependencies": {
     "@types/chai": "^4.3.3",
     "@types/mocha": "^9.1.1",
@@ -60,8 +40,5 @@
     "printWidth": 100,
     "singleQuote": true,
     "trailingComma": "all"
-  },
-  "dependencies": {
-    "node-addon-api": "^5.0.0"
   }
 }
