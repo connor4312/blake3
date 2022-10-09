@@ -1,6 +1,6 @@
 {
   "name": "blake3-wasm",
-  "version": "2.1.7",
+  "version": "3.0.0",
   "description": "BLAKE3 hashing for JavaScript: WebAssembly bindings only",
   "engines": {
     "node": ">=16"

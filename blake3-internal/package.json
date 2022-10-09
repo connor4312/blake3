@@ -1,6 +1,6 @@
 {
   "name": "@c4312/blake3-internal",
-  "version": "2.1.7",
+  "version": "3.0.0",
   "description": "Internal shared package for BLAKE3 bindings",
   "engines": {
     "node": ">=16"
